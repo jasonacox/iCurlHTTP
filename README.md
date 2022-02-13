@@ -4,10 +4,8 @@ iCurlHTTP is a simple, easy to use app for the iPhone, iPad and AppleTV that all
 
 ## Download
 
-* iPhone, iPad and AppleTV: [Apple App Store](https://apps.apple.com/us/app/icurlhttp/id611943891)
+* iPhone, iPad and AppleTV - [Apple App Store](https://apps.apple.com/us/app/icurlhttp/id611943891)
 
 ## Issues
 
-Please report any issues or feature requests by opening an [Issue](https://github.com/jasonacox/iCurlHTTP/issues/new
-
-)
+Please report any issues or feature requests by opening an [Issue](https://github.com/jasonacox/iCurlHTTP/issues/new)
