@@ -12,7 +12,7 @@ iCurlHTTP is a simple, easy to use app for the iPhone, iPad and AppleTV that all
 
 ## Source
 
-This repo contains the complete source for iCurlHTTP. To build, use Xcode to load `iCurlHTTP.xcodeproj`.
+This repo contains the complete source for iCurlHTTP. To build, use Xcode to load `iCurlHTTP.xcodeproj`. Issue reporting and contributions are welcome!
 
 Requirements:
 
