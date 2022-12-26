@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>userAgent</key>
+	<string>iCurlHTTP/1.18 libcurl/7.83.1 OpenSSL/1.1.1o zlib/1.2.11 nghttp2/1.47.0</string>
+	<key>userName</key>
+	<string></string>
+	<key>userPass</key>
+	<string></string>
+	<key>userAuthBasic</key>
+	<true/>
+	<key>userAuthDigest</key>
+	<false/>
+	<key>userAuthNTLM</key>
+	<false/>
+	<key>userAuthNegotiate</key>
+	<false/>
+	<key>userAuthAny</key>
+	<false/>
+	<key>userHeaders</key>
+	<string></string>
+	<key>userPost</key>
+	<string>firstname=Post&amp;lastname=Robot</string>
+	<key>userInsecure</key>
+	<true/>
+	<key>userTimeout</key>
+	<integer>30</integer>
+	<key>userSSLv3</key>
+	<false/>
+	<key>userHTTP2</key>
+	<true/>
+	<key>userCertDetail</key>
+	<false/>
+	<key>userIPv4</key>
+	<true/>
+	<key>userIPv6</key>
+	<true/>
+	<key>userResolve</key>
+	<string></string>
+	<key>userConnectTimeout</key>
+	<integer>5</integer>
+</dict>
+</plist>

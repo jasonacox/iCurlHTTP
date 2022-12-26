@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>userURL</key>
+		<string></string>
+		<key>userAgent</key>
+		<string></string>
+		<key>userName</key>
+		<string></string>
+		<key>userPass</key>
+		<string></string>
+		<key>userAuthBasic</key>
+		<true/>
+		<key>userAuthDigest</key>
+		<false/>
+		<key>userAuthNTLM</key>
+		<false/>
+		<key>userAuthNegotiate</key>
+		<false/>
+		<key>userAuthAny</key>
+		<false/>
+		<key>userHeaders</key>
+		<string></string>
+		<key>userPost</key>
+		<string></string>
+		<key>userInsecure</key>
+		<false/>
+	</dict>
+</array>
+</plist>

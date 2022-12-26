@@ -1,0 +1,29 @@
+{
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "8092C8C7FB5C3FF769ACA4A4D09F354B1F39375F" : 0,
+    "4FD2DFE0248836661BE40FC0C0A5A1ACF51DA053" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "7E1E4699-3DC6-429A-8154-E10A4C29C397",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "8092C8C7FB5C3FF769ACA4A4D09F354B1F39375F" : "",
+    "4FD2DFE0248836661BE40FC0C0A5A1ACF51DA053" : "Build-OpenSSL-cURL\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "iCurlHTTP",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "iCurlHTTP.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/jasonacox\/Build-OpenSSL-cURL.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "4FD2DFE0248836661BE40FC0C0A5A1ACF51DA053"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/x2on\/OpenSSL-for-iPhone",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "8092C8C7FB5C3FF769ACA4A4D09F354B1F39375F"
+    }
+  ]
+}

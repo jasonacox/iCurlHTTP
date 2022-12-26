@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<string>http://www.apple.com</string>
+	<string>https://www.apple.com</string>
+	<string>http://www.google.com</string>
+	<string>https://www.facebook.com</string>
+	<string>http://www.jasonacox.com/icurlhttp/</string>
+	<string>http://user:pass@jasonacox.com/gettest.php</string>
+</array>
+</plist>
