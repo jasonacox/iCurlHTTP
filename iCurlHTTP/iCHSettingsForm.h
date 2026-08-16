@@ -62,6 +62,7 @@ typedef NS_ENUM(NSInteger, AuthType)
 
 // Response Output
 @property (nonatomic, assign) BOOL userHeadersOnly;
+@property (nonatomic, assign) BOOL userFixedFont;
 
 
 @end

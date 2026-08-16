@@ -272,13 +272,13 @@ int iCHCurlProgressCallback(void *clientp, int64_t dltotal, int64_t dlnow, int64
     [vc updateProgress:&perProgress];
     /*  NOTE: this section moved to insertText function
     // check for large file - present option to cancel
-    if((dlnow > 200000 || (dltotal > 200000 && dlnow > 10000)) && !largefileAlert) {
+    if((dlnow > 2000000 || (dltotal > 2000000 && dlnow > 10000)) && !largefileAlert) {
         
         largefileAlert = TRUE;
         waitForUser = TRUE;
         
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Large File Warning"
-                                                        message:@"HTML download exceeds 200k"
+                                                        message:@"HTML download exceeds 2MB"
                                                        delegate:vc
                                               cancelButtonTitle:@"Cancel"
                                               otherButtonTitles:@"OK", nil];
@@ -405,6 +405,7 @@ int iCHCurlProgressCallback(void *clientp, int64_t dltotal, int64_t dlnow, int64
     
     // Display version and library info in view
     _resultText.text = [@"" stringByAppendingFormat:@"iCurlHTTP v%@\n[HTTP Server Response Diagnostic Tool]\n(c) 2026 Jason A. Cox\n\nUsing: %s\n\n\n\n\n",[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"], curl_version()];
+    defaultResultFont = _resultText.font; // remember the nib's font before settings may override it with a fixed-width font
     
     // Format UISegmentedControls Font
     [[UISegmentedControl appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIFont fontWithName:@"STHeitiSC-Medium" size:12.0], NSFontAttributeName, nil] forState:UIControlStateNormal];
@@ -1832,6 +1833,16 @@ UIEdgeInsets insetDefault;
         [self saveSettings];
         NSLog(@"Upgraded Settings.plist - userHeadersOnly");
     }
+    if(settingsdata[@"userFixedFont"]) {
+        userFixedFont = [settingsdata[@"userFixedFont"] boolValue];
+    }
+    else {
+        // upgrade plist
+        userFixedFont = NO;
+        [self saveSettings];
+        NSLog(@"Upgraded Settings.plist - userFixedFont");
+    }
+    _resultText.font = userFixedFont ? [UIFont fontWithName:@"Menlo" size:defaultResultFont.pointSize] : defaultResultFont;
 
 }
 
@@ -1860,6 +1871,7 @@ UIEdgeInsets insetDefault;
     settingsdata[@"userIPv6"] = [NSNumber numberWithBool:userIPv6];
     settingsdata[@"userResolve"] = userResolve;
     settingsdata[@"userHeadersOnly"] = [NSNumber numberWithBool:userHeadersOnly];
+    settingsdata[@"userFixedFont"] = [NSNumber numberWithBool:userFixedFont];
     
     NSString *destPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
     destPath = [destPath stringByAppendingPathComponent:@"Settings.plist"];
@@ -1986,14 +1998,14 @@ UIEdgeInsets insetDefault;
     //NSLog(@"insertText : %ld/%ld = %1.2f", downloadedSize, fileSize, perProgress);
     
     // check for large file - present option to cancel
-    if((downloadedSize > 200000 || (fileSize > 200000 && downloadedSize > 10000)) && !largefileAlert) {
+    if((downloadedSize > 2000000 || (fileSize > 2000000 && downloadedSize > 10000)) && !largefileAlert) {
         largefileAlert = TRUE;
         waitForUser = TRUE;
         [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
         
         UIAlertController *myAlertControllerd = [UIAlertController
                                                  alertControllerWithTitle:@"Large File Warning"
-                                                 message:@"HTML download exceeds 200k"
+                                                 message:@"HTML download exceeds 2MB"
                                                  preferredStyle:UIAlertControllerStyleAlert                   ];
         
         // Create a UIAlertAction that can be added to the alert
@@ -2026,7 +2038,7 @@ UIEdgeInsets insetDefault;
         /*
         
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Large File Warning"
-                                                        message:@"HTML download exceeds 200k"
+                                                        message:@"HTML download exceeds 2MB"
                                                        delegate:self
                                               cancelButtonTitle:@"Cancel"
                                               otherButtonTitles: nil];

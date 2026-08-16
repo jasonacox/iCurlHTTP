@@ -72,6 +72,8 @@
     NSString *userResolve;   // DNS resolve override
     BOOL userHeadersOnly;   // display headers only and discard body output
     BOOL bodyDiscardNotice; // one-time per transfer notice that body data was discarded
+    BOOL userFixedFont;     // display result text in a fixed-width (monospace) font
+    UIFont *defaultResultFont; // original result text font, from the nib, restored when fixed-width is off
     
 }
 @property (retain, nonatomic) UITextField *_urlText;

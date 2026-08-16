@@ -123,6 +123,12 @@
         formdata.userHeadersOnly = NO;
         NSLog(@"Settings.plist -- Missing userHeadersOnly");
     }
+    if(settingsdata[@"userFixedFont"]) formdata.userFixedFont = [settingsdata[@"userFixedFont"] boolValue];
+    else {
+        // upgrade plist
+        formdata.userFixedFont = NO;
+        NSLog(@"Settings.plist -- Missing userFixedFont");
+    }
     //reload the table
     [self.tableView reloadData];
     
@@ -155,6 +161,7 @@
     settingsdata[@"userIPv6"] = [NSNumber numberWithBool:formdata.userIPv6];
     settingsdata[@"userResolve"] = formdata.userResolve;
     settingsdata[@"userHeadersOnly"] = [NSNumber numberWithBool:formdata.userHeadersOnly];
+    settingsdata[@"userFixedFont"] = [NSNumber numberWithBool:formdata.userFixedFont];
     //NSLog(@"trying to save: %@",settingsdata);
     NSString *destPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
     destPath = [destPath stringByAppendingPathComponent:@"Settings.plist"];
@@ -222,6 +229,7 @@
     formdata.userIPv6 = YES;
     formdata.userResolve = @"";
     formdata.userHeadersOnly = NO;
+    formdata.userFixedFont = NO;
     //reload the table
     [self.tableView reloadData];
 }

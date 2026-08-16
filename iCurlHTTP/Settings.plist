@@ -42,5 +42,7 @@
 	<integer>5</integer>
 	<key>userHeadersOnly</key>
 	<false/>
+	<key>userFixedFont</key>
+	<false/>
 </dict>
 </plist>

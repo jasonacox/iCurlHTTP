@@ -5,14 +5,22 @@ notes in [iCHViewController.m](iCurlHTTP/iCHViewController.m).
 
 ## v1.19
 
+- Added "Display Headers Only" setting under Response Output ([#8](https://github.com/jasonacox/iCurlHTTP/pull/8)) -
+  discards the response body (like `curl -o /dev/null`) and shows a one-line
+  notice instead, skipping the Large File Warning for big downloads. Thanks
+  @jasonacox-sam, requested by @sourcecodemage in [#7](https://github.com/jasonacox/iCurlHTTP/issues/7)
 - Declared `ITSAppUsesNonExemptEncryption=false` in `iCurlHTTP-Info.plist` for
   App Store export-compliance
 - Removed unused sandbox/network-client entitlements
 - `urls.plist` defaults switched to `https`
+- Raised the Large File Warning threshold from 200KB to 2MB to match modern
+  HTML page sizes ([#5](https://github.com/jasonacox/iCurlHTTP/issues/5))
+- Added "Fixed Width Font" setting under Response Output ([#6](https://github.com/jasonacox/iCurlHTTP/issues/6)) -
+  displays result output in a monospace font
 - Spacing/constraint refinements in `iCHViewController_iPhoneX_port.xib`
 - Bug Fix - Notch / Dynamic Island detection now uses safe area insets instead
   of a hardcoded list of screen heights, fixing layout on newer iPhones
-  (13 Pro+, 14 Pro, 15, 16 series)
+  (13 Pro+, 14 Pro, 15, 16, 17 series)
 
 ## v1.18
 
