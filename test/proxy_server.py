@@ -39,8 +39,7 @@ class ProxyHandler(BaseHTTPRequestHandler):
 
     def do_CONNECT(self):
         # HTTPS: tunnel raw bytes between client and destination
-        host, _, port = self.path.partition(":")
-        port = int(port) if port else 443
+        host, port = self._parse_authority(self.path, 443)
         try:
             upstream = socket.create_connection((host, port), timeout=15)
         except OSError as e:
@@ -53,6 +52,17 @@ class ProxyHandler(BaseHTTPRequestHandler):
         client_socket = self.connection
         self._relay(client_socket, upstream)
 
+    @staticmethod
+    def _parse_authority(authority, default_port):
+        # Handles bracketed IPv6 literals ("[::1]:443", "[::1]") as well as
+        # plain "host:port" / "host" targets
+        if authority.startswith("["):
+            host, _, rest = authority[1:].partition("]")
+            port = int(rest[1:]) if rest.startswith(":") and rest[1:] else default_port
+            return host, port
+        host, sep, port = authority.rpartition(":")
+        return (host, int(port)) if sep else (authority, default_port)
+
     def _relay(self, client_socket, upstream):
         def pump(src, dst):
             try:
@@ -64,11 +74,10 @@ class ProxyHandler(BaseHTTPRequestHandler):
             except OSError:
                 pass
             finally:
-                for s in (src, dst):
-                    try:
-                        s.shutdown(socket.SHUT_RDWR)
-                    except OSError:
-                        pass
+                try:
+                    dst.shutdown(socket.SHUT_WR)
+                except OSError:
+                    pass
 
         t1 = threading.Thread(target=pump, args=(client_socket, upstream), daemon=True)
         t2 = threading.Thread(target=pump, args=(upstream, client_socket), daemon=True)
@@ -76,6 +85,8 @@ class ProxyHandler(BaseHTTPRequestHandler):
         t2.start()
         t1.join()
         t2.join()
+        # shutdown() only half-closes the connection - explicitly close to release the fd
+        upstream.close()
 
     def _forward(self, method):
         # Plain HTTP: forward the request and relay the response

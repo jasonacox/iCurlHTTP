@@ -133,7 +133,7 @@
 //          iCHViewController_iPhoneX_port.xib spacing/constraint refinements
 //          Bug Fix - Notch/Dynamic Island detection now uses safe area insets
 //          instead of a hardcoded screen height list, fixing layout on newer
-//          iPhones (13 Pro+, 14 Pro, 15, 16 series)
+//          iPhones (13 Pro+, 14 Pro, 15, 16, 17 series)
 //
 // ** WISH LIST **
 //          Search box for result text / regex even better
