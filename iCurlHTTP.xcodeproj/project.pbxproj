@@ -30,6 +30,7 @@
 		77586CA216D0B17F00682EC8 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 77586CA016D0B17F00682EC8 /* InfoPlist.strings */; };
 		77586CA416D0B17F00682EC8 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 77586CA316D0B17F00682EC8 /* main.m */; };
 		77586CA816D0B17F00682EC8 /* iCHAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 77586CA716D0B17F00682EC8 /* iCHAppDelegate.m */; };
+		AB2F083887054977A35F6BEB /* iCHSceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BC69FBAD90F0F05590303FC /* iCHSceneDelegate.m */; };
 		77586CAA16D0B17F00682EC8 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 77586CA916D0B17F00682EC8 /* Default.png */; };
 		77586CB116D0B17F00682EC8 /* iCHViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77586CB016D0B17F00682EC8 /* iCHViewController.m */; };
 		77586CC016D0B74800682EC8 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77586CBF16D0B74800682EC8 /* CFNetwork.framework */; };
@@ -78,6 +79,8 @@
 		77586CA516D0B17F00682EC8 /* iCurlHTTP-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "iCurlHTTP-Prefix.pch"; sourceTree = "<group>"; };
 		77586CA616D0B17F00682EC8 /* iCHAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = iCHAppDelegate.h; sourceTree = "<group>"; };
 		77586CA716D0B17F00682EC8 /* iCHAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = iCHAppDelegate.m; sourceTree = "<group>"; };
+		CC3410138AF823B0669C7368 /* iCHSceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = iCHSceneDelegate.h; sourceTree = "<group>"; };
+		6BC69FBAD90F0F05590303FC /* iCHSceneDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = iCHSceneDelegate.m; sourceTree = "<group>"; };
 		77586CA916D0B17F00682EC8 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		77586CAB16D0B17F00682EC8 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		77586CAD16D0B17F00682EC8 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
@@ -185,6 +188,8 @@
 				77570B89193BD0F4002BEF10 /* FXForms */,
 				77586CA616D0B17F00682EC8 /* iCHAppDelegate.h */,
 				77586CA716D0B17F00682EC8 /* iCHAppDelegate.m */,
+				CC3410138AF823B0669C7368 /* iCHSceneDelegate.h */,
+				6BC69FBAD90F0F05590303FC /* iCHSceneDelegate.m */,
 				77586CAF16D0B17F00682EC8 /* iCHViewController.h */,
 				96EE347123BD510200250A3E /* iCHColors.h */,
 				966972EE23BBDB0200E24790 /* iCHStringTrunc.h */,
@@ -314,6 +319,7 @@
 				966972ED23BBD9FB00E24790 /* iCHSegmentedOverride.h in Sources */,
 				77570B8C193BD0F4002BEF10 /* FXForms.m in Sources */,
 				77586CA816D0B17F00682EC8 /* iCHAppDelegate.m in Sources */,
+				AB2F083887054977A35F6BEB /* iCHSceneDelegate.m in Sources */,
 				77570B95193BD2A6002BEF10 /* iCHSettingsViewController.m in Sources */,
 				77586CB116D0B17F00682EC8 /* iCHViewController.m in Sources */,
 			);

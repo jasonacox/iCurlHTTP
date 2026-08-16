@@ -16,5 +16,9 @@
 
 @property (strong, nonatomic) iCHViewController *viewController;
 
+// Chooses the nib to use for the given window (device idiom, notch, Mac
+// Catalyst). Shared with iCHSceneDelegate for the iOS 13+ scene lifecycle.
++ (NSString *)nibNameForWindow:(UIWindow *)window;
+
 @end
 
