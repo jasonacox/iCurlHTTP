@@ -30,7 +30,6 @@
 		77586CA216D0B17F00682EC8 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 77586CA016D0B17F00682EC8 /* InfoPlist.strings */; };
 		77586CA416D0B17F00682EC8 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 77586CA316D0B17F00682EC8 /* main.m */; };
 		77586CA816D0B17F00682EC8 /* iCHAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 77586CA716D0B17F00682EC8 /* iCHAppDelegate.m */; };
-		AB2F083887054977A35F6BEB /* iCHSceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BC69FBAD90F0F05590303FC /* iCHSceneDelegate.m */; };
 		77586CAA16D0B17F00682EC8 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 77586CA916D0B17F00682EC8 /* Default.png */; };
 		77586CB116D0B17F00682EC8 /* iCHViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77586CB016D0B17F00682EC8 /* iCHViewController.m */; };
 		77586CC016D0B74800682EC8 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77586CBF16D0B74800682EC8 /* CFNetwork.framework */; };
@@ -46,6 +45,7 @@
 		9F909BB628852897006667E7 /* libcrypto.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F909BB228852897006667E7 /* libcrypto.xcframework */; };
 		9F909BB728852897006667E7 /* libcurl.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F909BB328852897006667E7 /* libcurl.xcframework */; };
 		9F909BB828852897006667E7 /* libssl.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F909BB428852897006667E7 /* libssl.xcframework */; };
+		AB2F083887054977A35F6BEB /* iCHSceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6BC69FBAD90F0F05590303FC /* iCHSceneDelegate.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -59,6 +59,7 @@
 		1BB8B8D81C67FD34002D393C /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		1BD0049D1A59144E00902C4B /* icon-ios7-gear-outline-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-ios7-gear-outline-128.png"; sourceTree = "<group>"; };
 		1BD0049F1A59193100902C4B /* urlspost.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = urlspost.plist; sourceTree = "<group>"; };
+		6BC69FBAD90F0F05590303FC /* iCHSceneDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = iCHSceneDelegate.m; sourceTree = "<group>"; };
 		773C094D17E68A94003B787E /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		7744B3B018B319DC0053EEE7 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		77570B8A193BD0F4002BEF10 /* FXForms.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FXForms.h; sourceTree = "<group>"; };
@@ -79,8 +80,6 @@
 		77586CA516D0B17F00682EC8 /* iCurlHTTP-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "iCurlHTTP-Prefix.pch"; sourceTree = "<group>"; };
 		77586CA616D0B17F00682EC8 /* iCHAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = iCHAppDelegate.h; sourceTree = "<group>"; };
 		77586CA716D0B17F00682EC8 /* iCHAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = iCHAppDelegate.m; sourceTree = "<group>"; };
-		CC3410138AF823B0669C7368 /* iCHSceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = iCHSceneDelegate.h; sourceTree = "<group>"; };
-		6BC69FBAD90F0F05590303FC /* iCHSceneDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = iCHSceneDelegate.m; sourceTree = "<group>"; };
 		77586CA916D0B17F00682EC8 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		77586CAB16D0B17F00682EC8 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		77586CAD16D0B17F00682EC8 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
@@ -104,6 +103,7 @@
 		9F909BB228852897006667E7 /* libcrypto.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = libcrypto.xcframework; path = lib/libcrypto.xcframework; sourceTree = "<group>"; };
 		9F909BB328852897006667E7 /* libcurl.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = libcurl.xcframework; path = lib/libcurl.xcframework; sourceTree = "<group>"; };
 		9F909BB428852897006667E7 /* libssl.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = libssl.xcframework; path = lib/libssl.xcframework; sourceTree = "<group>"; };
+		CC3410138AF823B0669C7368 /* iCHSceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = iCHSceneDelegate.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -256,8 +256,9 @@
 		77586C8C16D0B17F00682EC8 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				BuildIndependentTargetsInParallel = YES;
 				CLASSPREFIX = iCH;
-				LastUpgradeCheck = 1020;
+				LastUpgradeCheck = 2610;
 				ORGANIZATIONNAME = "Jason Cox";
 			};
 			buildConfigurationList = 77586C8F16D0B17F00682EC8 /* Build configuration list for PBXProject "iCurlHTTP" */;
@@ -359,6 +360,7 @@
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -367,9 +369,11 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = 3VBZPX2GZ9;
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -390,6 +394,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -414,6 +419,7 @@
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -422,8 +428,10 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
+				DEVELOPMENT_TEAM = 3VBZPX2GZ9;
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -437,6 +445,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -452,7 +461,6 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CURRENT_PROJECT_VERSION = 70;
-				DEVELOPMENT_TEAM = 3VBZPX2GZ9;
 				ENABLE_BITCODE = NO;
 				ENABLE_TESTABILITY = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -486,7 +494,6 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CURRENT_PROJECT_VERSION = 70;
-				DEVELOPMENT_TEAM = 3VBZPX2GZ9;
 				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "iCurlHTTP/iCurlHTTP-Prefix.pch";
