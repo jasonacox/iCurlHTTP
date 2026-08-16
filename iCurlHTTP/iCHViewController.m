@@ -131,6 +131,12 @@
 //          Removed unused sandbox/network-client entitlements
 //          urls.plist defaults switched to https
 //          iCHViewController_iPhoneX_port.xib spacing/constraint refinements
+//          Adopted UIScene lifecycle (iCHSceneDelegate) for iOS 13+, keeping
+//          the old AppDelegate window setup for iOS 12
+//          Bug Fix - Result view append optimized (NSTextStorage, throttled
+//          UI refresh, non-contiguous layout) to fix UI hangs/drag on large,
+//          heavily-wrapped pages and multi-second freezes when interacting
+//          with dialogs/URL history right after a big page finished loading
 //          Bug Fix - Notch/Dynamic Island detection now uses safe area insets
 //          instead of a hardcoded screen height list, fixing layout on newer
 //          iPhones (13 Pro+, 14 Pro, 15, 16, 17 series)
@@ -157,6 +163,7 @@ bool largefileAlert;
 long long downloadedSize;
 long long fileSize;
 bool waitForUser; // dialog box freeze work
+NSTimeInterval lastUIRefresh; // throttle for insertText/insertTextv UI updates
 //bool autoRedirect; // if user selected redirection try to follow
 
 // Create private interface
@@ -164,6 +171,9 @@ bool waitForUser; // dialog box freeze work
 - (size_t)copyUpToThisManyBytes:(size_t)bytes intoThisPointer:(void *)pointer;
 - (void)insertText:(NSString *)text;
 - (void)insertTextv:(NSString *)text;
+- (void)appendResultText:(NSString *)text;
+- (void)setResultText:(NSString *)text;
+- (void)pumpRunLoopForInterval:(NSTimeInterval)interval;
 - (void)receivedData:(NSData *)data;
 - (BOOL)headersOnly;
 - (void)noteBodyDiscarded;
@@ -393,7 +403,13 @@ int iCHCurlProgressCallback(void *clientp, int64_t dltotal, int64_t dlnow, int64
     // The following is required to eliminate errors related to UICollectionView
     // It is probably related to the legacy xib AutoSize iCurlHTTP uses
     _urlDropdown.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-    
+
+    // Large, heavily-wrapped responses are slow to scroll/append with TextKit's
+    // default contiguous layout, which requires everything before a range to
+    // already be laid out. Non-contiguous layout lets it lay out only what's
+    // actually visible.
+    _resultText.layoutManager.allowsNonContiguousLayout = YES;
+
     // Remove title for iOS > 7
     NSArray *versionCompatibility = [[UIDevice currentDevice].systemVersion componentsSeparatedByString:@"."];
     if ([[versionCompatibility objectAtIndex:0] intValue] >= 7) { /// iOS7+ is installed
@@ -933,7 +949,7 @@ UIEdgeInsets insetDefault;
         //[_resultText setBackgroundColor:[UIColor grayColor]];
         //[_resultText setTextColor:[UIColor blackColor]];
         
-        _resultText.text = @"\n\n\n⊣ Select options or tap Go to Continue ⊢";
+        [self setResultText:@"\n\n\n⊣ Select options or tap Go to Continue ⊢"];
         _resultText.textAlignment = NSTextAlignmentCenter;
     }
 }
@@ -999,7 +1015,7 @@ UIEdgeInsets insetDefault;
     
     // Update interface for new curl
     _progress.hidden = NO;
-    _resultText.text = @""; // clear viewer
+    [self setResultText:@""]; // clear viewer
     _resultText.textAlignment = NSTextAlignmentLeft;
     _timings.text = @"NS: ----   TCP: ----    SSL: ----    FB: ----    Total: ----"; // clear timings
     _timings.hidden=NO; // unhide timing data
@@ -1012,6 +1028,7 @@ UIEdgeInsets insetDefault;
     //autoRedirect = FALSE;
     downloadedSize = 0;
     fileSize = 0;
+    lastUIRefresh = 0;
     
     // Give some render time to show response before we hit the network
     [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
@@ -1048,10 +1065,10 @@ UIEdgeInsets insetDefault;
     }
     
     if([_urlText.text length] > 6) if([[_urlText.text substringToIndex:6] isEqualToString:@"https:" ]) { // https
-        if(userInsecure && _verbose.selectedSegmentIndex == 1L) _resultText.text = [ _resultText.text stringByAppendingString:@"-- HTTPS: SSL Verification Disabled\n"];
+        if(userInsecure && _verbose.selectedSegmentIndex == 1L) [self appendResultText:@"-- HTTPS: SSL Verification Disabled\n"];
         if(userSSLv3) {
             curl_easy_setopt(_curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_SSLv3); // SSLv3 protocol
-            if(_verbose.selectedSegmentIndex == 1L) _resultText.text = [_resultText.text stringByAppendingString:@"-- HTTPS: Force SSLv3 Protocol\n"];
+            if(_verbose.selectedSegmentIndex == 1L) [self appendResultText:@"-- HTTPS: Force SSLv3 Protocol\n"];
         }
         else curl_easy_setopt(_curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_DEFAULT); // TLSv1 protocol - Default
     }
@@ -1326,15 +1343,15 @@ UIEdgeInsets insetDefault;
                                         total_time,total_size, total_speed, http_ver_s, http_code,_resultText.text];
                     */
                     // This puts summary details at the end
-                    _resultText.text = [_resultText.text stringByAppendingFormat:@"\n** Timing Details **\n-- \tName Lookup:\t%0.2fs\n-- \tTCP Connect: \t%0.2fs\n-- \tSSL Handshake: \t%0.2fs\n-- \tFirst Byte: \t\t%0.2fs\n-- \tTotal Download: \t%0.2fs\n-- Size: %0.0f bytes\n-- Speed: %0.0f bytes/sec\n-- Using: %@\n** RESULT CODE: %ld**",
+                    [self appendResultText:[NSString stringWithFormat:@"\n** Timing Details **\n-- \tName Lookup:\t%0.2fs\n-- \tTCP Connect: \t%0.2fs\n-- \tSSL Handshake: \t%0.2fs\n-- \tFirst Byte: \t\t%0.2fs\n-- \tTotal Download: \t%0.2fs\n-- Size: %0.0f bytes\n-- Speed: %0.0f bytes/sec\n-- Using: %@\n** RESULT CODE: %ld**",
                                         timing_ns,timing_tcp,timing_ssl,timing_fb,
-                                        total_time,total_size, total_speed, http_ver_s, http_code];
+                                        total_time,total_size, total_speed, http_ver_s, http_code]];
                     //             @{FXFormFieldKey: @"userCertDetail", FXFormFieldTitle: @"Verbose Cert Details", FXFormFieldType: FXFormFieldTypeOption},
                     
                     if(userCertDetail) {
                         // Show Addtional Certificate Details if Requested
                         // Details here: https://curl.haxx.se/libcurl/c/certinfo.html
-                        _resultText.text = [_resultText.text stringByAppendingFormat:@"\n\n** Certificate Chain Details **\n"];
+                        [self appendResultText:@"\n\n** Certificate Chain Details **\n"];
                         
                         union {
                             struct curl_slist    *to_info;
@@ -1349,14 +1366,14 @@ UIEdgeInsets insetDefault;
                                 int i;
                                 
                                 //printf("%d certs!\n", ptr.to_certinfo->num_of_certs);
-                                _resultText.text = [_resultText.text stringByAppendingFormat:@"\n-- Number of Certs: %d", ptr.to_certinfo->num_of_certs];
+                                [self appendResultText:[NSString stringWithFormat:@"\n-- Number of Certs: %d", ptr.to_certinfo->num_of_certs]];
                                 
                                 for(i = 0; i < ptr.to_certinfo->num_of_certs; i++) {
                                     struct curl_slist *slist;
                                     
                                     for(slist = ptr.to_certinfo->certinfo[i]; slist; slist = slist->next) {
                                         // printf("%s\n", slist->data);
-                                        _resultText.text = [_resultText.text stringByAppendingFormat:@"\n---\n%s", slist->data];
+                                        [self appendResultText:[NSString stringWithFormat:@"\n---\n%s", slist->data]];
                                     }
                                     [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
                                 }
@@ -1365,9 +1382,9 @@ UIEdgeInsets insetDefault;
                     }
                     
                 } else {
-                    _resultText.text = [_resultText.text stringByAppendingFormat:@"\n** Timing Details **\n-- \tName Lookup:\t%0.2fs\n-- \tTCP Connect: \t%0.2fs\n-- \tFirst Byte: \t\t%0.2fs\n-- \tTotal Download: \t%0.2fs\n-- Size: %0.0f bytes\n-- Speed: %0.0f bytes/sec\n-- Using: %@\n** RESULT CODE: %ld**",
+                    [self appendResultText:[NSString stringWithFormat:@"\n** Timing Details **\n-- \tName Lookup:\t%0.2fs\n-- \tTCP Connect: \t%0.2fs\n-- \tFirst Byte: \t\t%0.2fs\n-- \tTotal Download: \t%0.2fs\n-- Size: %0.0f bytes\n-- Speed: %0.0f bytes/sec\n-- Using: %@\n** RESULT CODE: %ld**",
                                         timing_ns,timing_tcp,timing_fb, 
-                                        total_time,total_size, total_speed, http_ver_s, http_code];
+                                        total_time,total_size, total_speed, http_ver_s, http_code]];
                 }
 
             }
@@ -1461,14 +1478,14 @@ UIEdgeInsets insetDefault;
 
 		}
         else {
-			_resultText.text = [_resultText.text stringByAppendingFormat:@"\n** TRANSFER INTERRUPTED - ERROR [%d]\n", theResult];
+			[self appendResultText:[NSString stringWithFormat:@"\n** TRANSFER INTERRUPTED - ERROR [%d]\n", theResult]];
                 [_resultText setTextColor:[UIColor UITEXTERROR]];
             if (theResult == 6) {
-                _resultText.text = [_resultText.text stringByAppendingString:@"\n** Host Not Found - Check URL or Network\n"];
+                [self appendResultText:@"\n** Host Not Found - Check URL or Network\n"];
 
             }
             if (theResult == 28) {
-                _resultText.text = [_resultText.text stringByAppendingFormat:@"** %@s TIMEOUT REACHED - Increase value in user settings.\n",userTimeout];
+                [self appendResultText:[NSString stringWithFormat:@"** %@s TIMEOUT REACHED - Increase value in user settings.\n",userTimeout]];
                 UIAlertController *myAlertControllerc = [UIAlertController
                                                         alertControllerWithTitle:[NSString stringWithFormat:@"Aborted: %@s Timeout Reached",userTimeout]
                                                         message:[NSString stringWithFormat:@"Increase value in user settings."]
@@ -1495,11 +1512,11 @@ UIEdgeInsets insetDefault;
                  */
             }
             if (theResult == 35) {
-                if(!userSSLv3) _resultText.text = [_resultText.text stringByAppendingFormat:@"** Possible TLSv1 Failure by Server - Try SSLv3 in user setting.\n"];
-                else _resultText.text = [_resultText.text stringByAppendingFormat:@"** Possible SSLv3 Rejection by Server - Disable SSLv3 in user setting.\n"];
+                if(!userSSLv3) [self appendResultText:@"** Possible TLSv1 Failure by Server - Try SSLv3 in user setting.\n"];
+                else [self appendResultText:@"** Possible SSLv3 Rejection by Server - Disable SSLv3 in user setting.\n"];
             }
             if (theResult == 60) {
-                _resultText.text = [_resultText.text stringByAppendingFormat:@"** CERTIFICATE INVALID - Certificate cannot be authenticated with known CAs. Select Insecure mode in user settings to bypass.\n"];
+                [self appendResultText:@"** CERTIFICATE INVALID - Certificate cannot be authenticated with known CAs. Select Insecure mode in user settings to bypass.\n"];
             }
             NSLog(@"** CURL ERROR %d **", theResult);
         }
@@ -1736,7 +1753,7 @@ UIEdgeInsets insetDefault;
     _urlDropdown.hidden=YES;  // hide the dropdown
     
     // inform user to press go - allowing them to made other changes
-    _resultText.text = @"\n\n\n⊣ Select options or tap Go to Continue ⊢";
+    [self setResultText:@"\n\n\n⊣ Select options or tap Go to Continue ⊢"];
     _resultText.textAlignment = NSTextAlignmentCenter;
     [_resultText setTextColor:[UIColor blackColor]];
     
@@ -1948,7 +1965,7 @@ UIEdgeInsets insetDefault;
     [_urlDropdown reloadData]; // reload tableview data
     _urlText.text = @""; // clear URL field
     _progress.hidden = NO;
-    _resultText.text = @""; // clear viewer
+    [self setResultText:@""]; // clear viewer
     _timings.text = @"NS: ----   TCP: ----    SSL: ----    FB: ----    Total: ----"; // clear timings
     _timings.hidden=NO; // unhide timing data
     _progress.progress = 0.0; // start progress bar at zero
@@ -2002,9 +2019,9 @@ UIEdgeInsets insetDefault;
         [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
     }
 
-    _resultText.text = [_resultText.text stringByAppendingString:text];
-    
-    downloadedSize = _resultText.text.length;
+    [self appendResultText:text];
+
+    downloadedSize += text.length;
     if(downloadedSize > fileSize) fileSize = fileSize*2;
     float perProgress;
     
@@ -2067,12 +2084,14 @@ UIEdgeInsets insetDefault;
     }
     
     // force the run loop to run and do rendering while curl_easy_perform() hasn't returned yet
-    // rendering slows down drastically with large html files - increase runloop time for larger files
-    if(largefileAlert)
-        [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.2]]; // up render time
-    else
-        [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
-    ;
+    // rendering slows down drastically with large html files - throttle how often we actually
+    // pump the run loop so a chunky response doesn't stall for a fixed 100-200ms per chunk
+    NSTimeInterval now = [NSDate timeIntervalSinceReferenceDate];
+    NSTimeInterval minInterval = largefileAlert ? 0.2 : 0.1;
+    if(now - lastUIRefresh >= minInterval) {
+        lastUIRefresh = now;
+        [self pumpRunLoopForInterval:0.01];
+    }
 
 }
 
@@ -2086,9 +2105,9 @@ UIEdgeInsets insetDefault;
     }
 	@autoreleasepool {
          if(_verbose.selectedSegmentIndex == 1L) {
-             _resultText.text = [_resultText.text stringByAppendingString:text];
-             
-             downloadedSize = _resultText.text.length;
+             [self appendResultText:text];
+
+             downloadedSize += text.length;
              if(downloadedSize > fileSize) fileSize = fileSize*1.5;
              float perProgress;
              
@@ -2098,10 +2117,55 @@ UIEdgeInsets insetDefault;
              
              //NSLog(@"insertTextv : %ld/%ld = %1.2f", downloadedSize, fileSize, perProgress);
              
-             [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+             NSTimeInterval now = [NSDate timeIntervalSinceReferenceDate];
+             if(now - lastUIRefresh >= 0.1) {
+                 lastUIRefresh = now;
+                 [self pumpRunLoopForInterval:0.01];
+             }
              // force the run loop to run and do drawing while curl_easy_perform() hasn't returned yet
          }
 	}
+}
+
+// Efficiently append to the result text view - avoids the O(n^2) cost of
+// repeatedly reassigning .text (which relays out the entire document on
+// every call, and gets very expensive on large, heavily-wrapped responses)
+- (void)appendResultText:(NSString *)text
+{
+    NSTextStorage *storage = _resultText.textStorage;
+    NSDictionary *attrs = @{NSFontAttributeName: _resultText.font ?: [UIFont systemFontOfSize:[UIFont systemFontSize]],
+                            NSForegroundColorAttributeName: _resultText.textColor ?: [UIColor blackColor]};
+    NSAttributedString *appended = [[NSAttributedString alloc] initWithString:text attributes:attrs];
+    [storage beginEditing];
+    [storage appendAttributedString:appended];
+    [storage endEditing];
+}
+
+// Efficiently replace the entire result text view, e.g. for the "tap Go to
+// continue" placeholder or clearing before a new request. Deleting via
+// textStorage - rather than reassigning .text - avoids also re-deriving a
+// fresh attributed string from scratch for large previous content.
+- (void)setResultText:(NSString *)text
+{
+    NSTextStorage *storage = _resultText.textStorage;
+    [storage beginEditing];
+    [storage deleteCharactersInRange:NSMakeRange(0, storage.length)];
+    [storage endEditing];
+    [self appendResultText:text];
+}
+
+// Pumps the run loop for the given interval in both the default mode and
+// UIKit's tracking mode (used while the user is scrolling/dragging a table
+// or text view), so a synchronous curl transfer on the main thread doesn't
+// leave scroll gestures completely unserviced.
+- (void)pumpRunLoopForInterval:(NSTimeInterval)interval
+{
+    NSDate *until = [NSDate dateWithTimeIntervalSinceNow:interval];
+    NSRunLoop *runLoop = [NSRunLoop mainRunLoop];
+    while ([until timeIntervalSinceNow] > 0) {
+        [runLoop runMode:UITrackingRunLoopMode beforeDate:until];
+        [runLoop runMode:NSDefaultRunLoopMode beforeDate:until];
+    }
 }
 
 - (void)updateProgress:(double *)per

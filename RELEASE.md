@@ -24,6 +24,29 @@ notes in [iCHViewController.m](iCurlHTTP/iCHViewController.m).
 - Added [test/proxy_server.py](test/proxy_server.py) - a dependency-free
   IPv4/IPv6 HTTP(S) forward proxy for manually testing the proxy override
   setting (see [test/README.md](test/README.md))
+- Adopted the `UIScene` lifecycle (new `iCHSceneDelegate`, `UIApplicationSceneManifest`
+  in `iCurlHTTP-Info.plist`) to address Apple's "UIScene lifecycle will soon be
+  required" runtime warning. `iCHAppDelegate` still handles the window directly
+  on iOS 12, since UIScene requires iOS 13+
+- Bug Fix - Result view was reassigning the whole `UITextView.text` (and
+  re-reading its length) on every streamed chunk, forcing a full relayout of
+  everything received so far - O(n²) as the response grew, and especially slow
+  on real devices for large, heavily line-wrapped HTML. Now appends
+  incrementally via `NSTextStorage` with a running byte counter, and throttles
+  the forced UI-refresh run-loop pump instead of stalling ~100-200ms per chunk
+- Bug Fix - The remaining end-of-transfer summary appends (Timing Details,
+  Certificate Chain Details, error messages) and view resets (URL history
+  selection, "tap Go to Continue" placeholder, clearing before a new request)
+  still reassigned the whole `.text` - the biggest source of the multi-second
+  UI freezes reported when interacting with dialogs/the URL dropdown right
+  after a large page finished loading. Converted to the same incremental
+  `NSTextStorage` helpers
+- Enabled `NSLayoutManager.allowsNonContiguousLayout` on the result view, so
+  scrolling a large, heavily-wrapped response no longer requires laying out
+  everything before the visible range
+- The streaming-phase UI-refresh pump now also services `UITrackingRunLoopMode`
+  (not just the default run loop mode), so scroll/drag gestures started while
+  a transfer is still streaming are more likely to get serviced
 - Spacing/constraint refinements in `iCHViewController_iPhoneX_port.xib`
 - Bug Fix - Notch / Dynamic Island detection now uses safe area insets instead
   of a hardcoded list of screen heights, fixing layout on newer iPhones
