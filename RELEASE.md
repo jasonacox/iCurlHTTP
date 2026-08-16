@@ -21,6 +21,9 @@ notes in [iCHViewController.m](iCurlHTTP/iCHViewController.m).
   ([#3](https://github.com/jasonacox/iCurlHTTP/issues/3)) - manually set a
   custom proxy or force no proxy for testing, instead of always following the
   iOS system proxy setting
+- Added [test/proxy_server.py](test/proxy_server.py) - a dependency-free
+  IPv4/IPv6 HTTP(S) forward proxy for manually testing the proxy override
+  setting (see [test/README.md](test/README.md))
 - Spacing/constraint refinements in `iCHViewController_iPhoneX_port.xib`
 - Bug Fix - Notch / Dynamic Island detection now uses safe area insets instead
   of a hardcoded list of screen heights, fixing layout on newer iPhones
