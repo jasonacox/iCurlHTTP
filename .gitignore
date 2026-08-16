@@ -57,3 +57,8 @@ build/
 # Local-only asset archive (kept on disk, not tracked in git)
 /Screenshots and Images/
 
+# Prebuilt curl/openssl/nghttp2 libraries (huge binaries) - build via
+# https://github.com/jasonacox/Build-OpenSSL-cURL and keep them local only
+/lib/*.xcframework/*
+!/lib/*.xcframework/Info.plist
+
