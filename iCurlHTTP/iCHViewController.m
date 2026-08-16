@@ -122,6 +122,19 @@
 //   v1.17- Support for new iPhone 13
 //          Updates - New libcurl (7.80.0), openssl (1.1.1l), nghttp2 (1.46.0) libraries
 //
+//  1/4/2026
+//   v1.18- OpenSSL 3.0.18 upgrade, updated libcurl/nghttp2 libraries
+//          Raised minimum deployment target to iOS 12.0
+//
+//  1/5/2026
+//   v1.19- ITSAppUsesNonExemptEncryption declared in Info.plist for App Store compliance
+//          Removed unused sandbox/network-client entitlements
+//          urls.plist defaults switched to https
+//          iCHViewController_iPhoneX_port.xib spacing/constraint refinements
+//          Bug Fix - Notch/Dynamic Island detection now uses safe area insets
+//          instead of a hardcoded screen height list, fixing layout on newer
+//          iPhones (13 Pro+, 14 Pro, 15, 16 series)
+//
 // ** WISH LIST **
 //          Search box for result text / regex even better
 //          Method toggle instead of selector box to allow all verbs for iphone

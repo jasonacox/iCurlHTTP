@@ -6,7 +6,7 @@
 	<string>https://www.apple.com</string>
 	<string>http://www.google.com</string>
 	<string>https://www.facebook.com</string>
-	<string>http://www.jasonacox.com/icurlhttp/</string>
-	<string>http://user:pass@jasonacox.com/gettest.php</string>
+	<string>https://www.jasonacox.com/icurlhttp/</string>
+	<string>https://user:pass@jasonacox.com/gettest.php</string>
 </array>
 </plist>
