@@ -60,6 +60,10 @@ typedef NS_ENUM(NSInteger, AuthType)
 @property (nonatomic, assign) BOOL userIPv6;
 @property (nonatomic, copy) NSString *userResolve;
 
+// HTTP Proxy Override
+@property (nonatomic, assign) BOOL userProxyOverride;
+@property (nonatomic, copy) NSString *userProxy;
+
 // Response Output
 @property (nonatomic, assign) BOOL userHeadersOnly;
 @property (nonatomic, assign) BOOL userFixedFont;

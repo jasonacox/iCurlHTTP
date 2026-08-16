@@ -44,5 +44,9 @@
 	<false/>
 	<key>userFixedFont</key>
 	<false/>
+	<key>userProxyOverride</key>
+	<false/>
+	<key>userProxy</key>
+	<string></string>
 </dict>
 </plist>

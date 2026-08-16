@@ -1159,7 +1159,12 @@ UIEdgeInsets insetDefault;
                 break;
         }
 		// Set up proxies
-		if ([proxySettings objectForKey:(NSString *)kCFNetworkProxiesHTTPEnable] && [[proxySettings objectForKey:(NSString *)kCFNetworkProxiesHTTPEnable] boolValue])
+		if (userProxyOverride) {
+			// Manual override - blank forces no proxy (bypasses iOS system proxy),
+			// non-blank sets a custom proxy (host[:port]) for testing
+			proxyHost = userProxy ?: @"";
+		}
+		else if ([proxySettings objectForKey:(NSString *)kCFNetworkProxiesHTTPEnable] && [[proxySettings objectForKey:(NSString *)kCFNetworkProxiesHTTPEnable] boolValue])
 		{
 			if ([proxySettings objectForKey:(NSString *)kCFNetworkProxiesHTTPProxy])
 				proxyHost = [proxySettings objectForKey:(NSString *)kCFNetworkProxiesHTTPProxy];
@@ -1815,6 +1820,16 @@ UIEdgeInsets insetDefault;
         [self saveSettings];
         NSLog(@"Upgraded Settings.plist for 1.7");
     }
+    if(settingsdata[@"userProxy"]) {
+        userProxyOverride = [settingsdata[@"userProxyOverride"] boolValue];
+        userProxy = settingsdata[@"userProxy"];
+    }
+    else {
+        userProxyOverride = NO;
+        userProxy = @"";
+        [self saveSettings];
+        NSLog(@"Upgraded Settings.plist - userProxyOverride, userProxy");
+    }
     if(settingsdata[@"userConnectTimeout"])  {
         userConnectTimeout = settingsdata[@"userConnectTimeout"];
     }
@@ -1872,6 +1887,8 @@ UIEdgeInsets insetDefault;
     settingsdata[@"userResolve"] = userResolve;
     settingsdata[@"userHeadersOnly"] = [NSNumber numberWithBool:userHeadersOnly];
     settingsdata[@"userFixedFont"] = [NSNumber numberWithBool:userFixedFont];
+    settingsdata[@"userProxyOverride"] = [NSNumber numberWithBool:userProxyOverride];
+    settingsdata[@"userProxy"] = userProxy;
     
     NSString *destPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
     destPath = [destPath stringByAppendingPathComponent:@"Settings.plist"];
