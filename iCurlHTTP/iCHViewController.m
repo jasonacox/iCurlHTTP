@@ -265,7 +265,7 @@ size_t iCHCurlWriteCallback(char *ptr, size_t size, size_t nmemb, void *userdata
 
 int count=0;
 
-int iCHCurlProgressCallback(void *clientp, int64_t dltotal, int64_t dlnow, int64_t ultotal, int64_t ulnow) {
+int iCHCurlProgressCallback(void *clientp, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow) {
     //int progress_callback(void *clientp,   curl_off_t dltotal,   curl_off_t dlnow,   curl_off_t ultotal,   curl_off_t ulnow);
     double perProgress;
     if(dltotal < 1.0) {
@@ -918,7 +918,6 @@ UIEdgeInsets insetDefault;
     
     // Check for an existing thread - we can't render parallel curls
     if(globalReset > 0) {
-        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
         [_resultText setTextColor:[UIColor redColor]]; // notify users that existing curl is terminated
         globalReset = 2; // set global flag that a cancellation is requested to let curl functions to know to terminate
         return;
@@ -972,12 +971,11 @@ UIEdgeInsets insetDefault;
     BOOL success; // response placeholder
     
     // start activity spinner
-    UIActivityIndicatorView *activityView=[[UIActivityIndicatorView alloc]     initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    UIActivityIndicatorView *activityView=[[UIActivityIndicatorView alloc]     initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
     activityView.color = [UIColor darkGrayColor];
     activityView.center=self.view.center;
     [activityView startAnimating];
     [self.view addSubview:activityView];
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     
     // update curl timeout value to userTimeout settings
     if(userTimeout.integerValue>0) curl_easy_setopt(_curl, CURLOPT_TIMEOUT, [userTimeout longValue]); // seconds
@@ -1008,7 +1006,6 @@ UIEdgeInsets insetDefault;
     // Check for an existing thread - we can't render parallel curls
     if(globalReset > 0) {
         [activityView stopAnimating]; // shutdown spinner
-        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
         [_resultText setTextColor:[UIColor redColor]]; // notify users that existing curl is terminated
         // NSLog(@"Go action recived while download still in progress, aborting.");
         globalReset = 2; // set global flag that a cancellation is requested to let curl functions to know to terminate
@@ -1279,7 +1276,7 @@ UIEdgeInsets insetDefault;
             //#define CURLAUTH_NTLM_WB      (((unsigned long)1)<<5)
             //#define CURLAUTH_ONLY         (((unsigned long)1)<<31)
             //#define CURLAUTH_ANY          (~CURLAUTH_DIGEST_IE)
-        int authtype=0;
+        long authtype=0;
         if(userAuthAny) authtype += CURLAUTH_ANY;
         if(userAuthBasic) authtype += CURLAUTH_BASIC;
         if(userAuthDigest) authtype += CURLAUTH_DIGEST;
@@ -1298,7 +1295,8 @@ UIEdgeInsets insetDefault;
 		theResult = curl_easy_perform(_curl);
 		if (theResult == CURLE_OK) {
             long http_code, http_ver;
-            double total_time, total_size, total_speed, timing_ns, timing_tcp, timing_ssl, timing_fb;
+            double total_time, timing_ns, timing_tcp, timing_ssl, timing_fb;
+            curl_off_t total_size, total_speed;
             char *redirect_url2 = NULL;
             curl_easy_getinfo(_curl, CURLINFO_RESPONSE_CODE, &http_code);
             curl_easy_getinfo(_curl, CURLINFO_TOTAL_TIME, &total_time);
@@ -1347,7 +1345,7 @@ UIEdgeInsets insetDefault;
                     // This puts summary details at the end
                     [self appendResultText:[NSString stringWithFormat:@"\n** Timing Details **\n-- \tName Lookup:\t%0.2fs\n-- \tTCP Connect: \t%0.2fs\n-- \tSSL Handshake: \t%0.2fs\n-- \tFirst Byte: \t\t%0.2fs\n-- \tTotal Download: \t%0.2fs\n-- Size: %0.0f bytes\n-- Speed: %0.0f bytes/sec\n-- Using: %@\n** RESULT CODE: %ld**",
                                         timing_ns,timing_tcp,timing_ssl,timing_fb,
-                                        total_time,total_size, total_speed, http_ver_s, http_code]];
+                                        total_time,(double)total_size, (double)total_speed, http_ver_s, http_code]];
                     //             @{FXFormFieldKey: @"userCertDetail", FXFormFieldTitle: @"Verbose Cert Details", FXFormFieldType: FXFormFieldTypeOption},
                     
                     if(userCertDetail) {
@@ -1362,7 +1360,7 @@ UIEdgeInsets insetDefault;
                         
                         ptr.to_info = NULL;
                         
-                        if(!curl_easy_getinfo(_curl, CURLINFO_CERTINFO, &ptr.to_info)) {
+                        if(!curl_easy_getinfo(_curl, CURLINFO_CERTINFO, &ptr.to_certinfo)) {
                             
                             if(ptr.to_info) {
                                 int i;
@@ -1386,7 +1384,7 @@ UIEdgeInsets insetDefault;
                 } else {
                     [self appendResultText:[NSString stringWithFormat:@"\n** Timing Details **\n-- \tName Lookup:\t%0.2fs\n-- \tTCP Connect: \t%0.2fs\n-- \tFirst Byte: \t\t%0.2fs\n-- \tTotal Download: \t%0.2fs\n-- Size: %0.0f bytes\n-- Speed: %0.0f bytes/sec\n-- Using: %@\n** RESULT CODE: %ld**",
                                         timing_ns,timing_tcp,timing_fb, 
-                                        total_time,total_size, total_speed, http_ver_s, http_code]];
+                                        total_time,(double)total_size, (double)total_speed, http_ver_s, http_code]];
                 }
 
             }
@@ -1534,7 +1532,6 @@ UIEdgeInsets insetDefault;
         NSLog(@"ERROR: Invalid _urlText passed.");
     }
     [activityView stopAnimating];
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
     _progress.hidden = YES;
     

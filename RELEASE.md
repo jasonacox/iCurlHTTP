@@ -8,6 +8,23 @@ notes in [iCHViewController.m](iCurlHTTP/iCHViewController.m).
 - Raised minimum deployment target to iOS 13.0 (required by App Store
   validation once `UIScene` lifecycle support was adopted); removed the now
   unreachable iOS 12 window-setup fallback from `iCHAppDelegate`
+- Fixed curl API type mismatches that produced compiler warnings: the
+  `CURLOPT_XFERINFOFUNCTION` progress callback now uses `curl_off_t` (matching
+  curl's own typedef) instead of `int64_t`, `CURLOPT_HTTPAUTH`'s `authtype` is
+  now a `long` instead of `int` (avoiding truncation of the 64-bit `CURLAUTH_*`
+  bitmask constants), the `CURLINFO_SIZE_DOWNLOAD_T`/`CURLINFO_SPEED_DOWNLOAD_T`
+  getters now use `curl_off_t` output variables, and `CURLINFO_CERTINFO` reads
+  into the correctly-typed union member
+- Replaced FXForms' deprecated `scrollIndicatorInsets` getter/setter with
+  `verticalScrollIndicatorInsets` (available since iOS 13.0)
+- Replaced FXForms' deprecated `beginAnimations`/`commitAnimations` keyboard-inset
+  animations with block-based `[UIView animateWithDuration:...]`. Also fixed a
+  latent bug where the animation curve was cast directly from the `NSNumber*`
+  instead of reading `.integerValue`
+- Removed the deprecated `networkActivityIndicatorVisible` calls - Apple
+  removed the status-bar spinner effect in iOS 13, so these were already a
+  no-op; the app has its own spinner (`activityView`) and progress bar.
+  Also updated the deprecated `UIActivityIndicatorViewStyleGray` to `.medium`
 - Added "Display Headers Only" setting under Response Output ([#8](https://github.com/jasonacox/iCurlHTTP/pull/8)) -
   discards the response body (like `curl -o /dev/null`) and shows a one-line
   notice instead, skipping the Large File Warning for big downloads. Thanks
