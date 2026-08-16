@@ -131,8 +131,10 @@
 //          Removed unused sandbox/network-client entitlements
 //          urls.plist defaults switched to https
 //          iCHViewController_iPhoneX_port.xib spacing/constraint refinements
-//          Adopted UIScene lifecycle (iCHSceneDelegate) for iOS 13+, keeping
-//          the old AppDelegate window setup for iOS 12
+//          Adopted UIScene lifecycle (iCHSceneDelegate)
+//          Raised minimum deployment target to iOS 13.0 (required by App
+//          Store validation once UIScene lifecycle was adopted); removed the
+//          now unreachable iOS 12 window-setup fallback from iCHAppDelegate
 //          Bug Fix - Result view append optimized (NSTextStorage, throttled
 //          UI refresh, non-contiguous layout) to fix UI hangs/drag on large,
 //          heavily-wrapped pages and multi-second freezes when interacting

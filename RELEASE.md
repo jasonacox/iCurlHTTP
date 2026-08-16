@@ -5,6 +5,9 @@ notes in [iCHViewController.m](iCurlHTTP/iCHViewController.m).
 
 ## v1.19
 
+- Raised minimum deployment target to iOS 13.0 (required by App Store
+  validation once `UIScene` lifecycle support was adopted); removed the now
+  unreachable iOS 12 window-setup fallback from `iCHAppDelegate`
 - Added "Display Headers Only" setting under Response Output ([#8](https://github.com/jasonacox/iCurlHTTP/pull/8)) -
   discards the response body (like `curl -o /dev/null`) and shows a one-line
   notice instead, skipping the Large File Warning for big downloads. Thanks

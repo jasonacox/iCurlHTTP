@@ -28,19 +28,8 @@
     //
     curl_global_init(0L);
 
-    // iOS 13+ uses UIScene lifecycle (see iCHSceneDelegate) - the system calls
-    // application:configurationForConnectingSceneSession:options: below to
-    // hand off window creation instead of us doing it here.
-    if (@available(iOS 13.0, *)) {
-        return YES;
-    }
-
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    [self.window makeKeyAndVisible];
-    NSString *nibName = [iCHAppDelegate nibNameForWindow:self.window];
-    self.viewController = [[iCHViewController alloc] initWithNibName:nibName bundle:nil];
-    self.window.rootViewController = self.viewController;
-    [self.window makeKeyAndVisible];
+    // Window/rootViewController creation is handled by iCHSceneDelegate via
+    // application:configurationForConnectingSceneSession:options: below.
     return YES;
 }
 
@@ -73,13 +62,13 @@
 #endif
 }
 
-// UIScene lifecycle (iOS 13+) - hand off to iCHSceneDelegate
-- (UISceneConfiguration *)application:(UIApplication *)application configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession options:(UISceneConnectionOptions *)options API_AVAILABLE(ios(13.0))
+// UIScene lifecycle - hand off to iCHSceneDelegate
+- (UISceneConfiguration *)application:(UIApplication *)application configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession options:(UISceneConnectionOptions *)options
 {
     return [[UISceneConfiguration alloc] initWithName:@"Default Configuration" sessionRole:connectingSceneSession.role];
 }
 
-- (void)application:(UIApplication *)application didDiscardSceneSessions:(NSSet<UISceneSession *> *)sceneSessions API_AVAILABLE(ios(13.0))
+- (void)application:(UIApplication *)application didDiscardSceneSessions:(NSSet<UISceneSession *> *)sceneSessions
 {
     // Called when the user discards a scene session. Nothing to clean up - we
     // don't persist any scene-specific state.
