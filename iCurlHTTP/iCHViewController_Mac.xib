@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
     <device id="ipad9_7" orientation="portrait" layout="fullscreen" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -61,7 +61,7 @@
                         <segment title="Verbose"/>
                     </segments>
                     <connections>
-                        <action selector="ReqType:" destination="-1" eventType="valueChanged" id="tFL-Zg-CVd"/>
+                        <action selector="Go:" destination="-1" eventType="valueChanged" id="53"/>
                     </connections>
                 </segmentedControl>
                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Enter URL" minimumFontSize="17" clearButtonMode="always" translatesAutoresizingMaskIntoConstraints="NO" id="6">
@@ -91,12 +91,12 @@
                         <segment title="iPhone"/>
                         <segment title="iPad"/>
                         <segment title="Safari (Mac)"/>
-                        <segment title="Edge (PC)"/>
+                        <segment title="IE (PC)"/>
                         <segment title="Chrome (Mac)"/>
                         <segment title="FIrefox (PC)"/>
                     </segments>
                     <connections>
-                        <action selector="ReqType:" destination="-1" eventType="valueChanged" id="TRY-DN-KJY"/>
+                        <action selector="Go:" destination="-1" eventType="valueChanged" id="55"/>
                     </connections>
                 </segmentedControl>
                 <progressView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="9">

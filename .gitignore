@@ -10,6 +10,7 @@
 # Precompiled Headers
 *.gch
 *.pch
+!iCurlHTTP/iCurlHTTP-Prefix.pch
 
 # Compiled Dynamic libraries
 *.so
@@ -33,4 +34,26 @@
 
 # Local
 .DS_Store
+
+# Xcode signing / iOS provisioning material - never commit these
+*.p12
+*.cer
+*.certSigningRequest
+*.mobileprovision
+*.provisionprofile
+*.p8
+ExportOptions.plist
+*.xcarchive
+*.ipa
+*.dSYM
+*.dSYM.zip
+
+# Xcode user-specific / local state
+xcuserdata/
+*.xcuserstate
+DerivedData/
+build/
+
+# Local-only asset archive (kept on disk, not tracked in git)
+/Screenshots and Images/
 

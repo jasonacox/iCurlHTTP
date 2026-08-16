@@ -39,7 +39,7 @@
                  @{FXFormFieldKey: @"userAuthDigest",  FXFormFieldTitle: @"Auth-Digest", FXFormFieldType: FXFormFieldTypeOption},
                  @{FXFormFieldKey: @"userAuthNTLM", FXFormFieldTitle: @"Auth-NTLM", FXFormFieldType: FXFormFieldTypeOption},
                  @{FXFormFieldKey: @"userAuthNegotiate", FXFormFieldTitle: @"Auth-Negotiate", FXFormFieldType: FXFormFieldTypeOption},
-                 @{FXFormFieldKey: @"userAuthAny", FXFormFieldFooter: [@"" stringByAppendingFormat:@"iCurlHTTP v%@ Build %@\n(c) 2022 Jason A. Cox\n\nUsing:\n%s",[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"], [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"], curl_version()], FXFormFieldTitle: @"Auth-Any", FXFormFieldType: FXFormFieldTypeOption},
+                 @{FXFormFieldKey: @"userAuthAny", FXFormFieldFooter: [@"" stringByAppendingFormat:@"iCurlHTTP v%@ Build %@\n(c) 2026 Jason A. Cox\n\nUsing:\n%s",[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"], [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"], curl_version()], FXFormFieldTitle: @"Auth-Any", FXFormFieldType: FXFormFieldTypeOption},
                  ];
 }
 

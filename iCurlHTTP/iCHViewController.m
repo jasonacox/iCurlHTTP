@@ -118,14 +118,9 @@
 //          Bug Fix - SSLv3 Added for Testing (Force SSLv3 Setting)
 //          Mac Catalyst Support Added
 //
-//  5/29/2022
+//  11/21/2021
 //   v1.17- Support for new iPhone 13
-//          Updates - New libcurl (7.83.1), openssl (1.1.1o), nghttp2 (1.47.0) libraries
-//          Updates - Browser User Agents Updated and replaced IE with Edge.
-//
-//  7/17/2022
-//   v1.18- Fix Bug with iPhone 13 Pro
-//          Updates - New libcurl (7.84.0), openssl (1.1.1q), nghttp2 (1.48.0) libraries
+//          Updates - New libcurl (7.80.0), openssl (1.1.1l), nghttp2 (1.46.0) libraries
 //
 // ** WISH LIST **
 //          Search box for result text / regex even better
@@ -376,7 +371,7 @@ int iCHCurlProgressCallback(void *clientp, int64_t dltotal, int64_t dlnow, int64
     
     // The following is required to eliminate errors related to UICollectionView
     // It is probably related to the legacy xib AutoSize iCurlHTTP uses
-    self.automaticallyAdjustsScrollViewInsets = NO;
+    _urlDropdown.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     
     // Remove title for iOS > 7
     NSArray *versionCompatibility = [[UIDevice currentDevice].systemVersion componentsSeparatedByString:@"."];
@@ -388,7 +383,7 @@ int iCHCurlProgressCallback(void *clientp, int64_t dltotal, int64_t dlnow, int64
     }
     
     // Display version and library info in view
-    _resultText.text = [@"" stringByAppendingFormat:@"iCurlHTTP v%@\n[HTTP Server Response Diagnostic Tool]\n(c) 2022 Jason A. Cox\n\nUsing: %s\n\n\n\n\n",[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"], curl_version()];
+    _resultText.text = [@"" stringByAppendingFormat:@"iCurlHTTP v%@\n[HTTP Server Response Diagnostic Tool]\n(c) 2026 Jason A. Cox\n\nUsing: %s\n\n\n\n\n",[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"], curl_version()];
     
     // Format UISegmentedControls Font
     [[UISegmentedControl appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIFont fontWithName:@"STHeitiSC-Medium" size:12.0], NSFontAttributeName, nil] forState:UIControlStateNormal];
@@ -710,10 +705,10 @@ UIEdgeInsets insetDefault;
     
     UISimpleTextPrintFormatter *textFormatter = [[UISimpleTextPrintFormatter alloc] initWithText:copyString];
     textFormatter.startPage = 0;
-    textFormatter.contentInsets = UIEdgeInsetsMake(72.0, 72.0, 72.0, 72.0); // 1 inch margins
+    textFormatter.perPageContentInsets = UIEdgeInsetsMake(72.0, 72.0, 72.0, 72.0); // 1 inch margins
     textFormatter.maximumContentHeight = 8.5 * 72.0;
     pic.printFormatter = textFormatter;
-    pic.showsPageRange = YES;
+    //pic.showsPageRange = YES;
     
     void(^completionHandler)(UIPrintInteractionController *, BOOL, NSError *) = ^(UIPrintInteractionController *printController, BOOL completed, NSError *error) {
         if(!completed && error) {
@@ -889,31 +884,36 @@ UIEdgeInsets insetDefault;
         return;
     }
     
-    // inform user to press go - allowing them to make other changes
-    // Support for iOS 13 and Dark Mode - text to gray to indicate curl is loading
-    if (@available(iOS 13.0, *)) {
-        // Dark Mode On
-           if(self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
-               // iOS 13 in DARK mode
-               [_resultText setBackgroundColor:[UIColor UIBGWAITDARK]];
-               [_resultText setTextColor:[UIColor UITEXTDARK]];
-           }
-           else {
-               // iOS 13  in LIGHT mode
+    // if no URL selected, default to GO
+    if (!_urlText.text || [_urlText.text isEqualToString:@""]) {
+        [self Go:(self)]; // force Go action method to load URL
+    }
+    else {
+        // inform user to press go - allowing them to make other changes
+        // Support for iOS 13 and Dark Mode - text to gray to indicate curl is loading
+        if (@available(iOS 13.0, *)) {
+            // Dark Mode On
+               if(self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+                   // iOS 13 in DARK mode
+                   [_resultText setBackgroundColor:[UIColor UIBGWAITDARK]];
+                   [_resultText setTextColor:[UIColor UITEXTDARK]];
+               }
+               else {
+                   // iOS 13  in LIGHT mode
+                   [_resultText setBackgroundColor:[UIColor UIBGWAITLIGHT]];
+                   [_resultText setTextColor:[UIColor UITEXTLIGHT]];
+               }
+           } else {
+               // Fallback on earlier versions set above
                [_resultText setBackgroundColor:[UIColor UIBGWAITLIGHT]];
                [_resultText setTextColor:[UIColor UITEXTLIGHT]];
-           }
-       } else {
-           // Fallback on earlier versions set above
-           [_resultText setBackgroundColor:[UIColor UIBGWAITLIGHT]];
-           [_resultText setTextColor:[UIColor UITEXTLIGHT]];
+        }
+        //[_resultText setBackgroundColor:[UIColor grayColor]];
+        //[_resultText setTextColor:[UIColor blackColor]];
+        
+        _resultText.text = @"\n\n\n⊣ Select options or tap Go to Continue ⊢";
+        _resultText.textAlignment = NSTextAlignmentCenter;
     }
-    //[_resultText setBackgroundColor:[UIColor grayColor]];
-    //[_resultText setTextColor:[UIColor blackColor]];
-    
-    _resultText.text = @"\n\n\n⊣ Select options or tap Go to Continue ⊢";
-    _resultText.textAlignment = NSTextAlignmentCenter;
-    
 }
 
 - (void)runGo:(NSTimer *)timer
@@ -1097,45 +1097,44 @@ UIEdgeInsets insetDefault;
 		
         // set URL - warning: curl_easy_setopt() doesn't retain the memory passed into it
 		curl_easy_setopt(_curl, CURLOPT_URL, url.absoluteString.UTF8String);
-
-        // set up browser emulation - helpful reference: https://www.whatismybrowser.com/guides/the-latest-user-agent/
+              
+        // set up browser emulation
         switch (_browserType.selectedSegmentIndex) {
             case 0L: default:
                 // iCurlHTTP
                 curl_easy_setopt(_curl, CURLOPT_USERAGENT, [userAgent UTF8String] );
                 break;
             case 1L:
-                // Safari (iPhone) - Safari on iOS
+                // iPhone - Safari on iOS 13.7
                 curl_easy_setopt(_curl, CURLOPT_USERAGENT,
-                    "Mozilla/5.0 (iPhone; CPU iPhone OS 15_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile/15E148 Safari/604.1");
+                    "Mozilla/5.0 (iPhone; CPU iPhone OS 13_6_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1.2 Mobile/15E148 Safari/604.1");
                 break;
             case 2L:
-                // Safari (iPad) - Safari on iOS
+                // iPad - Safari on iOS 12.0
                 curl_easy_setopt(_curl, CURLOPT_USERAGENT,
-                    "Mozilla/5.0 (iPad; CPU OS 15_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile/15E148 Safari/604.1");
-                break;
+                    "Mozilla/5.0 (iPad; CPU OS 12_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Mobile/16A5288q Safari/605.1.15");
+                break;               
             case 3L:
-                // Safari (Mac) - Safari on MacOS
+                // Safari (Mac) - Safari 13.1.2 on MacOS 10.15.6
                 curl_easy_setopt(_curl, CURLOPT_USERAGENT,
-                    "Mozilla/5.0 (Macintosh; Intel Mac OS X 12_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Safari/605.1.15");
+                    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1.2 Safari/605.1.15");
                 break;
             case 4L:
-                // Edge (PC) - Edge on Windows 10/11
-                curl_easy_setopt(_curl, CURLOPT_USERAGENT,
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.63 Safari/537.36 Edg/100.0.1185.39");
+                // Windows IE (PC) - IE 11 on Windows 10
+                curl_easy_setopt(_curl, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Trident/7.0; rv:11.0) like Gecko");
+                // To-Do for 2021: Edge:  Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36 Edg/85.0.564.51
                 break;
             case 5L:
-                // Chrome (MAC) - Chrome on MacOS
+                // Chrome (MAC) - Chrome on MacOS 10.16.6
                 curl_easy_setopt(_curl, CURLOPT_USERAGENT,
-                    "Mozilla/5.0 (Macintosh; Intel Mac OS X 12_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.63 Safari/537.36");
+                    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36");
                 break;
             case 6L:
                 // Firefox (PC) - only on iPad
                 curl_easy_setopt(_curl, CURLOPT_USERAGENT,
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:100.0) Gecko/20100101 Firefox/100.0");
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:80.0) Gecko/20100101 Firefox/80.0");
                 break;
         }
-        
 		// Set up proxies
 		if ([proxySettings objectForKey:(NSString *)kCFNetworkProxiesHTTPEnable] && [[proxySettings objectForKey:(NSString *)kCFNetworkProxiesHTTPEnable] boolValue])
 		{
@@ -1256,8 +1255,8 @@ UIEdgeInsets insetDefault;
             char *redirect_url2 = NULL;
             curl_easy_getinfo(_curl, CURLINFO_RESPONSE_CODE, &http_code);
             curl_easy_getinfo(_curl, CURLINFO_TOTAL_TIME, &total_time);
-            curl_easy_getinfo(_curl, CURLINFO_SIZE_DOWNLOAD, &total_size);
-            curl_easy_getinfo(_curl, CURLINFO_SPEED_DOWNLOAD, &total_speed); // total
+            curl_easy_getinfo(_curl, CURLINFO_SIZE_DOWNLOAD_T, &total_size);
+            curl_easy_getinfo(_curl, CURLINFO_SPEED_DOWNLOAD_T, &total_speed); // total
             curl_easy_getinfo(_curl, CURLINFO_APPCONNECT_TIME, &timing_ssl); // ssl handshake time
             curl_easy_getinfo(_curl, CURLINFO_CONNECT_TIME, &timing_tcp); // tcp connect
             curl_easy_getinfo(_curl, CURLINFO_NAMELOOKUP_TIME, &timing_ns); // name server lookup
