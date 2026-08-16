@@ -117,6 +117,12 @@
         
         NSLog(@"Settings.plist -- Missing userConnectTimeout");
     }
+    if(settingsdata[@"userHeadersOnly"]) formdata.userHeadersOnly = [settingsdata[@"userHeadersOnly"] boolValue];
+    else {
+        // upgrade plist
+        formdata.userHeadersOnly = NO;
+        NSLog(@"Settings.plist -- Missing userHeadersOnly");
+    }
     //reload the table
     [self.tableView reloadData];
     
@@ -148,6 +154,7 @@
     settingsdata[@"userIPv4"] = [NSNumber numberWithBool:formdata.userIPv4];
     settingsdata[@"userIPv6"] = [NSNumber numberWithBool:formdata.userIPv6];
     settingsdata[@"userResolve"] = formdata.userResolve;
+    settingsdata[@"userHeadersOnly"] = [NSNumber numberWithBool:formdata.userHeadersOnly];
     //NSLog(@"trying to save: %@",settingsdata);
     NSString *destPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
     destPath = [destPath stringByAppendingPathComponent:@"Settings.plist"];
@@ -214,6 +221,7 @@
     formdata.userIPv4 = YES;
     formdata.userIPv6 = YES;
     formdata.userResolve = @"";
+    formdata.userHeadersOnly = NO;
     //reload the table
     [self.tableView reloadData];
 }

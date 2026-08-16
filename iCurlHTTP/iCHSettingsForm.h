@@ -60,5 +60,8 @@ typedef NS_ENUM(NSInteger, AuthType)
 @property (nonatomic, assign) BOOL userIPv6;
 @property (nonatomic, copy) NSString *userResolve;
 
+// Response Output
+@property (nonatomic, assign) BOOL userHeadersOnly;
+
 
 @end
