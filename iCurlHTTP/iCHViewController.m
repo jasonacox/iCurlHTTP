@@ -372,8 +372,7 @@ int iCHCurlProgressCallback(void *clientp, curl_off_t dltotal, curl_off_t dlnow,
     // Adjust curl defaults
     curl_easy_setopt(_curl, CURLOPT_TIMEOUT, 60L); // seconds for entire curl operation
     curl_easy_setopt(_curl, CURLOPT_CONNECTTIMEOUT, 10L); // seconds for DNS lookup and server to connect
-    curl_easy_setopt(_curl, CURLOPT_MAXCONNECTS, 0L); // this should disallow connection sharing
-    curl_easy_setopt(_curl, CURLOPT_FORBID_REUSE, 1L); // enforce connection to be closed
+    curl_easy_setopt(_curl, CURLOPT_FORBID_REUSE, 1L); // enforce connection to be closed, disallowing connection sharing
     curl_easy_setopt(_curl, CURLOPT_DNS_CACHE_TIMEOUT, 0L); // Disable DNS cache
     
     // SSL

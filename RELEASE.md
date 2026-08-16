@@ -5,6 +5,11 @@ notes in [iCHViewController.m](iCurlHTTP/iCHViewController.m).
 
 ## v1.19
 
+- Bug Fix - Removed an invalid `curl_easy_setopt(_curl, CURLOPT_MAXCONNECTS, 0L)`
+  call, which caused libcurl to reject the option and print
+  `setopt 0x47 got bad argument` into the Detail/verbose output on every
+  request. `CURLOPT_FORBID_REUSE=1` (already set) covers the intended
+  "disallow connection sharing" behavior
 - Raised minimum deployment target to iOS 13.0 (required by App Store
   validation once `UIScene` lifecycle support was adopted); removed the now
   unreachable iOS 12 window-setup fallback from `iCHAppDelegate`
