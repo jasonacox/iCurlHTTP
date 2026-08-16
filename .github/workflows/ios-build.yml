@@ -1,0 +1,76 @@
+name: iOS Build
+
+# Builds the iCurlHTTP Xcode project for the iOS Simulator to catch compile
+# and link errors. Does not run/build test/proxy_server.py (that's a
+# standalone dev tool, not part of the Xcode project).
+#
+# The repo intentionally doesn't vendor the compiled curl/openssl/nghttp2
+# xcframeworks (see lib/*.xcframework, which only contain Info.plist stubs),
+# so this workflow fetches a prebuilt set from a Build-OpenSSL-cURL release
+# that matches the OpenSSL/curl versions vendored under include/. Bump both
+# together if you upgrade.
+
+on:
+  push:
+    branches: [ master, "v*.*" ]
+    paths-ignore:
+      - "test/**"
+      - "**/*.md"
+  pull_request:
+    branches: [ master ]
+    paths-ignore:
+      - "test/**"
+      - "**/*.md"
+  workflow_dispatch:
+
+env:
+  BOCURL_RELEASE_TAG: "1.0.3"
+  BOCURL_ASSET: "libcurl-8.17.0-openssl-3.0.18-nghttp2-1.68.0.tgz"
+
+jobs:
+  build:
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache prebuilt libcurl/openssl/nghttp2 xcframeworks
+        id: cache-libs
+        uses: actions/cache@v4
+        with:
+          path: ~/bocurl-libs
+          key: bocurl-${{ env.BOCURL_RELEASE_TAG }}-${{ env.BOCURL_ASSET }}
+
+      - name: Download prebuilt xcframeworks
+        if: steps.cache-libs.outputs.cache-hit != 'true'
+        run: |
+          set -euo pipefail
+          mkdir -p ~/bocurl-libs
+          curl -sL \
+            "https://github.com/jasonacox/Build-OpenSSL-cURL/releases/download/${BOCURL_RELEASE_TAG}/${BOCURL_ASSET}" \
+            -o ~/bocurl-libs/libs.tgz
+
+      - name: Install xcframeworks into lib/
+        run: |
+          set -euo pipefail
+          rm -rf extracted
+          mkdir -p extracted
+          tar -xzf ~/bocurl-libs/libs.tgz -C extracted
+          src_dir=$(find extracted -mindepth 1 -maxdepth 1 -type d)
+          for name in libcrypto libssl libcurl libnghttp2; do
+            rm -rf "lib/${name}.xcframework"
+            cp -R "${src_dir}/xcframework/${name}.xcframework" "lib/${name}.xcframework"
+          done
+          rm -rf extracted
+
+      - name: Build for iOS Simulator
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project iCurlHTTP.xcodeproj \
+            -scheme iCurlHTTP \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            ONLY_ACTIVE_ARCH=NO
