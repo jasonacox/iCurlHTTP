@@ -20,6 +20,8 @@
                  @{FXFormFieldKey: @"userHeaders", FXFormFieldTitle: @"", FXFormFieldFooter: @"(ex. Label: Data)", FXFormFieldType: FXFormFieldTypeLongText, FXFormFieldHeader: @"Additional HTTP Headers ⓗ"},
                  @{FXFormFieldKey: @"userPost", FXFormFieldTitle: @"", FXFormFieldFooter: @"(ex. field1=data&field2=data)", FXFormFieldType: FXFormFieldTypeLongText, FXFormFieldHeader: @"POST Data ⓟ"},
                  
+                 @{FXFormFieldKey: @"userHeadersOnly", FXFormFieldTitle: @"Display Headers Only", FXFormFieldType: FXFormFieldTypeOption, FXFormFieldHeader: @"Response Output", FXFormFieldFooter: @"(Select to discard body content — like curl -o /dev/null)"},
+                 
                  @{FXFormFieldKey: @"userInsecure", FXFormFieldTitle: @"Insecure Mode",  FXFormFieldType: FXFormFieldTypeOption, FXFormFieldHeader: @"SSL/TLS Settings"},
                  @{FXFormFieldKey: @"userCertDetail", FXFormFieldTitle: @"Cert Chain Details", FXFormFieldType: FXFormFieldTypeOption},
                  @{FXFormFieldKey: @"userSSLv3", FXFormFieldTitle: @"Force SSLv3", FXFormFieldType: FXFormFieldTypeOption, FXFormFieldFooter: @"(Select to disable TLS)"},

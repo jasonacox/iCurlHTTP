@@ -70,6 +70,8 @@
     BOOL userIPv4;          // support IPv4 address resolution
     BOOL userIPv6;          // support IPv6 address resolution
     NSString *userResolve;   // DNS resolve override
+    BOOL userHeadersOnly;   // display headers only and discard body output
+    BOOL bodyDiscardNotice; // one-time per transfer notice that body data was discarded
     
 }
 @property (retain, nonatomic) UITextField *_urlText;

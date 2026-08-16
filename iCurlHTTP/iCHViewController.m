@@ -157,6 +157,8 @@ bool waitForUser; // dialog box freeze work
 - (void)insertText:(NSString *)text;
 - (void)insertTextv:(NSString *)text;
 - (void)receivedData:(NSData *)data;
+- (BOOL)headersOnly;
+- (void)noteBodyDiscarded;
 - (void)rewind;
 - (void)updateProgress:(double *)per;
 - (int)DOglobalReset;
@@ -169,6 +171,12 @@ bool waitForUser; // dialog box freeze work
 // Curl methods to process response
 int iCHCurlDebugCallback(CURL *curl, curl_infotype infotype, char *info, size_t infoLen, void *contextInfo) {
 	iCHViewController *vc = (__bridge iCHViewController *)contextInfo;
+	// headers-only mode: discard body data before conversion, show one-time notice
+	// (checked before UTF-8 conversion so binary bodies also get the notice)
+	if (infotype == CURLINFO_DATA_IN && [vc headersOnly]) {
+		[vc noteBodyDiscarded];
+		return 0;
+	}
 	NSData *infoData = [NSData dataWithBytes:info length:infoLen];
 	NSString *infoStr = [[NSString alloc] initWithData:infoData encoding:NSUTF8StringEncoding];
     //NSLog(@"> In iCHCurlDebugCallback [%zu:%s]",infoLen,info);
@@ -986,6 +994,7 @@ UIEdgeInsets insetDefault;
     //[_resultText setTextColor:[UIColor grayColor]]; // text to gray to indicate curl loading
     largefileAlert = FALSE;
     waitForUser = FALSE;
+    bodyDiscardNotice = NO; // reset one-time body discard notice for this transfer
     //autoRedirect = FALSE;
     downloadedSize = 0;
     fileSize = 0;
@@ -1802,6 +1811,15 @@ UIEdgeInsets insetDefault;
         [self saveSettings];
         NSLog(@"Upgraded Settings.plist for v1.9");
     }
+    if(settingsdata[@"userHeadersOnly"]) {
+        userHeadersOnly = [settingsdata[@"userHeadersOnly"] boolValue];
+    }
+    else {
+        // upgrade plist
+        userHeadersOnly = NO;
+        [self saveSettings];
+        NSLog(@"Upgraded Settings.plist - userHeadersOnly");
+    }
 
 }
 
@@ -1829,6 +1847,7 @@ UIEdgeInsets insetDefault;
     settingsdata[@"userIPv4"] = [NSNumber numberWithBool:userIPv4];
     settingsdata[@"userIPv6"] = [NSNumber numberWithBool:userIPv6];
     settingsdata[@"userResolve"] = userResolve;
+    settingsdata[@"userHeadersOnly"] = [NSNumber numberWithBool:userHeadersOnly];
     
     NSString *destPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
     destPath = [destPath stringByAppendingPathComponent:@"Settings.plist"];
@@ -1916,6 +1935,21 @@ UIEdgeInsets insetDefault;
 		return bytesToGet;
 	}
 	return 0U;
+}
+
+// headers-only mode - user setting to discard body output (Settings > Display Headers Only)
+- (BOOL)headersOnly
+{
+    return userHeadersOnly;
+}
+
+// one-time notice when body data is discarded; CURLINFO_DATA_IN fires per chunk
+- (void)noteBodyDiscarded
+{
+    if (!bodyDiscardNotice) {
+        bodyDiscardNotice = YES;
+        [self insertText:@"-- [Discarding body per setting]\n"];
+    }
 }
 
 - (void)insertText:(NSString *)text

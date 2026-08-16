@@ -40,5 +40,7 @@
 	<string></string>
 	<key>userConnectTimeout</key>
 	<integer>5</integer>
+	<key>userHeadersOnly</key>
+	<false/>
 </dict>
 </plist>
