@@ -39,21 +39,6 @@
     NSArray *versionCompatibility = [[UIDevice currentDevice].systemVersion componentsSeparatedByString:@"."];
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    
-    // Override point for customization after application launch.
-    // The ** indicates ones that need the notch accomodation
-    // iPhone 6 = 1334 and 6s = 1334 and 6s Plus = 2208
-    // iphone 7 = 1334 and 7 Plus = 2208
-    // iPhone 8 = 1334   8 Plus = 2208   SE = 1136
-    // ** iPhone XR = 1624
-    // ** iPhone X or XS = 2436
-    // ** iPhone 11 = 1792
-    // ** iPhone 11 Pro = 2688
-    // ** iPhone 12 = 2532
-    // ** iPhone 12 Pro = 2532
-    // ** iPHone 12 Pro Max = 2778
-    // ** iPhone 12 mini = (real) 2340 (simulator) 2436
-     
 
 #if TARGET_OS_MACCATALYST
     NSLog(@"Device = Mac");
@@ -63,10 +48,14 @@
 #else
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         // iPHone
-        int height = (int)[[UIScreen mainScreen] nativeBounds].size.height;
-        int width = (int)[[UIScreen mainScreen] nativeBounds].size.width;
-        NSLog(@"iphone-height:%d -width:%d",height,width);
-        if (height == 2436 || height == 1624 || height == 1792 || height == 2688 || height == 2778 || height == 2532 || height == 2340)
+        // Make the window key/visible once to get real safe area insets, then
+        // decide which nib to use. Devices with no home button (notch,
+        // Dynamic Island, etc.) always report a non-zero bottom inset, so this
+        // works for future hardware without hardcoding screen dimensions.
+        [self.window makeKeyAndVisible];
+        BOOL hasNotch = self.window.safeAreaInsets.bottom > 0;
+        NSLog(@"iphone-safeAreaInsets:%@ hasNotch:%d", NSStringFromUIEdgeInsets(self.window.safeAreaInsets), hasNotch);
+        if (hasNotch)
         {
             // iPhoneX - use expanded nib to accomodate top notch
             NSLog(@"Device = iPhone with notch");
