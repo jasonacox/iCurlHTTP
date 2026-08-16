@@ -1545,18 +1545,18 @@ static BOOL *FXFormSetValueForKey(id<FXForm> form, id value, NSString *key)
         UIEdgeInsets tableContentInset = self.tableView.contentInset;
         tableContentInset.bottom = inset;
         
-        UIEdgeInsets tableScrollIndicatorInsets = self.tableView.scrollIndicatorInsets;
+        UIEdgeInsets tableScrollIndicatorInsets = self.tableView.verticalScrollIndicatorInsets;
         tableScrollIndicatorInsets.bottom = inset;
         
         //animate insets
-        [UIView beginAnimations:nil context:nil];
-        [UIView setAnimationCurve:(UIViewAnimationCurve)keyboardInfo[UIKeyboardAnimationCurveUserInfoKey]];
-        [UIView setAnimationDuration:[keyboardInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue]];
-        self.tableView.contentInset = tableContentInset;
-        self.tableView.scrollIndicatorInsets = tableScrollIndicatorInsets;
-        NSIndexPath *selectedRow = [self.tableView indexPathForCell:cell];
-        [self.tableView scrollToRowAtIndexPath:selectedRow atScrollPosition:UITableViewScrollPositionBottom animated:NO];
-        [UIView commitAnimations];
+        NSTimeInterval duration = [keyboardInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+        UIViewAnimationCurve curve = (UIViewAnimationCurve)[keyboardInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
+        [UIView animateWithDuration:duration delay:0.0 options:(UIViewAnimationOptions)(curve << 16) animations:^{
+            self.tableView.contentInset = tableContentInset;
+            self.tableView.verticalScrollIndicatorInsets = tableScrollIndicatorInsets;
+            NSIndexPath *selectedRow = [self.tableView indexPathForCell:cell];
+            [self.tableView scrollToRowAtIndexPath:selectedRow atScrollPosition:UITableViewScrollPositionBottom animated:NO];
+        } completion:nil];
     }
 }
 
@@ -1570,16 +1570,16 @@ static BOOL *FXFormSetValueForKey(id<FXForm> form, id value, NSString *key)
         UIEdgeInsets tableContentInset = self.tableView.contentInset;
         tableContentInset.bottom = 0;
         
-        UIEdgeInsets tableScrollIndicatorInsets = self.tableView.scrollIndicatorInsets;
+        UIEdgeInsets tableScrollIndicatorInsets = self.tableView.verticalScrollIndicatorInsets;
         tableScrollIndicatorInsets.bottom = 0;
         
         //restore insets
-        [UIView beginAnimations:nil context:nil];
-        [UIView setAnimationCurve:(UIViewAnimationCurve)keyboardInfo[UIKeyboardAnimationCurveUserInfoKey]];
-        [UIView setAnimationDuration:[keyboardInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue]];
-        self.tableView.contentInset = tableContentInset;
-        self.tableView.scrollIndicatorInsets = tableScrollIndicatorInsets;
-        [UIView commitAnimations];
+        NSTimeInterval duration = [keyboardInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+        UIViewAnimationCurve curve = (UIViewAnimationCurve)[keyboardInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
+        [UIView animateWithDuration:duration delay:0.0 options:(UIViewAnimationOptions)(curve << 16) animations:^{
+            self.tableView.contentInset = tableContentInset;
+            self.tableView.verticalScrollIndicatorInsets = tableScrollIndicatorInsets;
+        } completion:nil];
     }
 }
 

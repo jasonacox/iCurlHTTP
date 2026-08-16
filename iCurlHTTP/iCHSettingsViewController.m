@@ -110,6 +110,15 @@
         formdata.userResolve = @"";
         NSLog(@"Settings.plist -- Missing userResolve");
     }
+    if(settingsdata[@"userProxy"]) {
+        formdata.userProxyOverride = [settingsdata[@"userProxyOverride"] boolValue];
+        formdata.userProxy = settingsdata[@"userProxy"];
+    }
+    else {
+        formdata.userProxyOverride = NO;
+        formdata.userProxy = @"";
+        NSLog(@"Settings.plist -- Missing userProxyOverride and userProxy");
+    }
     if(settingsdata[@"userConnectTimeout"]) formdata.userConnectTimeout = settingsdata[@"userConnectTimeout"];
     else {
         // upgrade plist
@@ -122,6 +131,12 @@
         // upgrade plist
         formdata.userHeadersOnly = NO;
         NSLog(@"Settings.plist -- Missing userHeadersOnly");
+    }
+    if(settingsdata[@"userFixedFont"]) formdata.userFixedFont = [settingsdata[@"userFixedFont"] boolValue];
+    else {
+        // upgrade plist
+        formdata.userFixedFont = NO;
+        NSLog(@"Settings.plist -- Missing userFixedFont");
     }
     //reload the table
     [self.tableView reloadData];
@@ -155,6 +170,9 @@
     settingsdata[@"userIPv6"] = [NSNumber numberWithBool:formdata.userIPv6];
     settingsdata[@"userResolve"] = formdata.userResolve;
     settingsdata[@"userHeadersOnly"] = [NSNumber numberWithBool:formdata.userHeadersOnly];
+    settingsdata[@"userFixedFont"] = [NSNumber numberWithBool:formdata.userFixedFont];
+    settingsdata[@"userProxyOverride"] = [NSNumber numberWithBool:formdata.userProxyOverride];
+    settingsdata[@"userProxy"] = formdata.userProxy;
     //NSLog(@"trying to save: %@",settingsdata);
     NSString *destPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
     destPath = [destPath stringByAppendingPathComponent:@"Settings.plist"];
@@ -222,6 +240,9 @@
     formdata.userIPv6 = YES;
     formdata.userResolve = @"";
     formdata.userHeadersOnly = NO;
+    formdata.userFixedFont = NO;
+    formdata.userProxyOverride = NO;
+    formdata.userProxy = @"";
     //reload the table
     [self.tableView reloadData];
 }

@@ -27,61 +27,51 @@
     //               http://seiryu.home.comcast.net/~seiryu/libcurl-ios.html
     //
     curl_global_init(0L);
-    
-    // Determine hardware
-    /*
-    struct utsname systemInfo;
-            uname(&systemInfo);
-    
-    NSLog(@"%@", [NSString stringWithCString:systemInfo.machine
-                             encoding:NSUTF8StringEncoding]);
-    */
-    NSArray *versionCompatibility = [[UIDevice currentDevice].systemVersion componentsSeparatedByString:@"."];
-    
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 
+    // Window/rootViewController creation is handled by iCHSceneDelegate via
+    // application:configurationForConnectingSceneSession:options: below.
+    return YES;
+}
+
++ (NSString *)nibNameForWindow:(UIWindow *)window
+{
 #if TARGET_OS_MACCATALYST
     NSLog(@"Device = Mac");
-    
-    self.viewController = [[iCHViewController alloc] initWithNibName:@"iCHViewController_Mac" bundle:nil];
-
+    return @"iCHViewController_Mac";
 #else
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        // iPHone
-        // Make the window key/visible once to get real safe area insets, then
+        // iPhone - make the window key/visible once to get real safe area insets, then
         // decide which nib to use. Devices with no home button (notch,
         // Dynamic Island, etc.) always report a non-zero bottom inset, so this
         // works for future hardware without hardcoding screen dimensions.
-        [self.window makeKeyAndVisible];
-        BOOL hasNotch = self.window.safeAreaInsets.bottom > 0;
-        NSLog(@"iphone-safeAreaInsets:%@ hasNotch:%d", NSStringFromUIEdgeInsets(self.window.safeAreaInsets), hasNotch);
-        if (hasNotch)
-        {
+        [window makeKeyAndVisible];
+        BOOL hasNotch = window.safeAreaInsets.bottom > 0;
+        NSLog(@"iphone-safeAreaInsets:%@ hasNotch:%d", NSStringFromUIEdgeInsets(window.safeAreaInsets), hasNotch);
+        if (hasNotch) {
             // iPhoneX - use expanded nib to accomodate top notch
             NSLog(@"Device = iPhone with notch");
-            self.viewController = [[iCHViewController alloc] initWithNibName:@"iCHViewController_iPhoneX_port" bundle:nil];
-        } else {
-            // other iPhone
-            NSLog(@"Device = iPhone");
-            self.viewController = [[iCHViewController alloc] initWithNibName:@"iCHViewController_iPhone_port" bundle:nil];
+            return @"iCHViewController_iPhoneX_port";
         }
-    } else {
-        // Assume this is iPad
-        NSLog(@"Device = iPad");
-        // iPad Device
-        if ([[versionCompatibility objectAtIndex:0] intValue] >= 6) { /// iOS6+ is installed
-            //NSLog(@"iPad IOS Version 6 or newer - Using AutoSize NIB");  // portrait and landscape views
-            self.viewController = [[iCHViewController alloc] initWithNibName:@"iCHViewController_iPad_port" bundle:nil];
-        } else { /// iOS5 is installed
-            //NSLog(@"iPad IOS Version 5 or older - Using Static NIB");  // portrait view only
-            self.viewController = [[iCHViewController alloc] initWithNibName:@"iCHViewController_iPad_port" bundle:nil];
-        }
+        // other iPhone
+        NSLog(@"Device = iPhone");
+        return @"iCHViewController_iPhone_port";
     }
+    // Assume this is iPad
+    NSLog(@"Device = iPad");
+    return @"iCHViewController_iPad_port";
 #endif
-    
-    self.window.rootViewController = self.viewController;
-    [self.window makeKeyAndVisible];
-    return YES;
+}
+
+// UIScene lifecycle - hand off to iCHSceneDelegate
+- (UISceneConfiguration *)application:(UIApplication *)application configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession options:(UISceneConnectionOptions *)options
+{
+    return [[UISceneConfiguration alloc] initWithName:@"Default Configuration" sessionRole:connectingSceneSession.role];
+}
+
+- (void)application:(UIApplication *)application didDiscardSceneSessions:(NSSet<UISceneSession *> *)sceneSessions
+{
+    // Called when the user discards a scene session. Nothing to clean up - we
+    // don't persist any scene-specific state.
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application

@@ -192,7 +192,7 @@
                 <constraint firstItem="Qv5-1F-ZFn" firstAttribute="top" secondItem="7" secondAttribute="bottom" constant="8" symbolic="YES" id="dzs-Ds-Maj"/>
                 <constraint firstItem="7" firstAttribute="top" secondItem="5" secondAttribute="bottom" constant="8" symbolic="YES" id="g7H-0Y-Vdb"/>
                 <constraint firstItem="8" firstAttribute="leading" secondItem="1" secondAttribute="leadingMargin" id="hTG-Rq-Qdj"/>
-                <constraint firstItem="3" firstAttribute="top" secondItem="60H-lV-Rqh" secondAttribute="top" constant="6" id="hdl-8Y-dJe"/>
+                <constraint firstItem="3" firstAttribute="top" secondItem="60H-lV-Rqh" secondAttribute="top" constant="12" id="hdl-8Y-dJe"/>
                 <constraint firstItem="5" firstAttribute="leading" secondItem="c9e-zt-M6m" secondAttribute="trailing" constant="2" id="hmD-qt-SXn"/>
                 <constraint firstAttribute="bottom" secondItem="62" secondAttribute="bottom" constant="20" symbolic="YES" id="k1c-uM-BLH"/>
                 <constraint firstItem="10" firstAttribute="centerX" secondItem="1" secondAttribute="centerX" id="k4S-pk-3IT"/>
@@ -201,7 +201,7 @@
                 <constraint firstItem="10" firstAttribute="centerX" secondItem="8" secondAttribute="centerX" id="op0-nh-7Hz"/>
                 <constraint firstItem="62" firstAttribute="leading" secondItem="7" secondAttribute="leading" id="uvG-rT-mae"/>
                 <constraint firstItem="Qv5-1F-ZFn" firstAttribute="top" secondItem="lnk-yz-Yva" secondAttribute="top" id="v2a-de-uyJ"/>
-                <constraint firstItem="60H-lV-Rqh" firstAttribute="bottom" secondItem="Guc-dc-1XF" secondAttribute="bottom" constant="-8" id="vD9-gs-8zL"/>
+                <constraint firstItem="60H-lV-Rqh" firstAttribute="bottom" secondItem="Guc-dc-1XF" secondAttribute="bottom" constant="8" id="vD9-gs-8zL"/>
                 <constraint firstItem="Qv5-1F-ZFn" firstAttribute="leading" secondItem="Guc-dc-1XF" secondAttribute="leading" id="yep-qC-Box"/>
                 <constraint firstItem="c9e-zt-M6m" firstAttribute="leading" secondItem="4" secondAttribute="trailing" constant="10" id="yjt-7i-ROJ"/>
                 <constraint firstItem="3" firstAttribute="leading" secondItem="60H-lV-Rqh" secondAttribute="leading" constant="7" id="z3y-ad-WJn"/>

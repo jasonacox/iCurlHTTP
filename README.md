@@ -10,6 +10,25 @@ iCurlHTTP is a simple, easy to use app for the iPhone, iPad and AppleTV that all
 
 * iPhone, iPad and AppleTV - [Apple App Store](https://apps.apple.com/us/app/icurlhttp/id611943891)
 
+## Features
+
+* GET, HEAD, POST and PUT requests (DELETE, OPTIONS and TRACE also available on iPad)
+* HTTPS/SSL support with certificate chain details, insecure mode, and forced SSLv3 for testing
+* HTTP/2 support
+* Browser emulation - curl, iPhone Safari, iPad Safari, Mac Safari, Windows IE, Chrome and Firefox user-agents
+* Custom User-Agent, custom HTTP headers, POST data, and HTTP Authentication (Basic, Digest, NTLM, Negotiate)
+* URL history dropdown (including POST and header data) for quick repeated testing
+* Manual DNS resolve override and IPv4/IPv6 address resolution toggles
+* Manual HTTP proxy override - set a custom proxy or force no proxy, independent of the iOS system proxy
+* Configurable request and connect timeouts
+* Detailed HTTP timing breakdown - DNS lookup, TCP connect, SSL handshake, first byte and total time
+* Display Headers Only mode - discard the response body, like `curl -o /dev/null`
+* Fixed Width Font option for the result output
+* Large File Warning with cancelation option for big downloads
+* Share output via Clipboard, Printer or Email
+* Dark Mode support
+* iPhone, iPad, AppleTV and Mac (Catalyst) support
+
 ## Source
 
 This repo contains the complete source for iCurlHTTP. To build, use Xcode to load `iCurlHTTP.xcodeproj`. Issue reporting and contributions are welcome!

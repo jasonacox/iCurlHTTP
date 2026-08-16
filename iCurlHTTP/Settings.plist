@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>userAgent</key>
-	<string>iCurlHTTP/1.17 libcurl/7.80.0 OpenSSL/1.1.1l zlib/1.2.11 nghttp2/1.46.0</string>
+	<string>iCurlHTTP/1.19 libcurl/8.17.0 OpenSSL/3.0.18 zlib/1.2.12 nghttp2/1.68.0</string>
 	<key>userName</key>
 	<string></string>
 	<key>userPass</key>
@@ -42,5 +42,11 @@
 	<integer>5</integer>
 	<key>userHeadersOnly</key>
 	<false/>
+	<key>userFixedFont</key>
+	<false/>
+	<key>userProxyOverride</key>
+	<false/>
+	<key>userProxy</key>
+	<string></string>
 </dict>
 </plist>

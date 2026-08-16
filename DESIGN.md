@@ -4,10 +4,10 @@
 
 iCurlHTTP is an iOS application that provides HTTP server response diagnostics similar to cURL. It allows users to execute HTTP requests (GET, HEAD, POST, PUT, DELETE, OPTIONS, TRACE) against web servers and view detailed response information including headers, SSL/TLS details, timing metrics, and certificate chains.
 
-**Current Version:** v1.17  
-**Platform:** iOS (iPhone, iPad, Mac Catalyst)  
+**Current Version:** v1.19  
+**Platform:** iOS 13.0+ (iPhone, iPad, Mac Catalyst)  
 **Primary Language:** Objective-C  
-**Key Dependencies:** libcurl, OpenSSL, nghttp2, FXForms
+**Key Dependencies:** libcurl 8.17.0, OpenSSL 3.0.18, nghttp2 1.68.0, FXForms
 
 ---
 
@@ -25,6 +25,7 @@ The application follows a **Model-View-Controller (MVC)** pattern with some proc
 graph TB
     subgraph "Application Layer"
         AppDelegate[iCHAppDelegate]
+        SceneDelegate[iCHSceneDelegate]
     end
     
     subgraph "View Controllers"
@@ -50,7 +51,8 @@ graph TB
         nghttp2[nghttp2]
     end
     
-    AppDelegate -->|Initializes| MainVC
+    AppDelegate -->|Configures scene, curl init| SceneDelegate
+    SceneDelegate -->|Creates window/root VC| MainVC
     MainVC -->|Presents| SettingsVC
     SettingsVC -->|Uses| SettingsForm
     SettingsForm -->|Extends| FXForms
@@ -69,21 +71,23 @@ graph TB
 
 ## Core Components
 
-### 1. Application Delegate (`iCHAppDelegate`)
+### 1. Application & Scene Delegates (`iCHAppDelegate`, `iCHSceneDelegate`)
 
-**File:** `iCHAppDelegate.h/m`
+**Files:** `iCHAppDelegate.h/m`, `iCHSceneDelegate.h/m`
 
 **Responsibilities:**
-- Application lifecycle management
-- Device detection and appropriate NIB selection
-- libcurl and OpenSSL initialization
-- Platform-specific initialization (iPhone, iPad, Mac Catalyst)
+- `iCHAppDelegate`: app-level lifecycle, libcurl/OpenSSL global initialization,
+  and handing off scene configuration to `iCHSceneDelegate`
+- `iCHSceneDelegate`: `UIScene` lifecycle window/root view controller creation
+  (required as of iOS 13; the app's minimum deployment target)
+- Shared `+[iCHAppDelegate nibNameForWindow:]` picks the right nib for the
+  device idiom, notch/Dynamic Island, or Mac Catalyst
 
 **Key Logic:**
 ```objectivec
-- Device detection based on screen dimensions
-- Support for notched iPhones (X, XR, 11, 12, 13 series)
-- iOS version compatibility checks
+- Notch/Dynamic Island detection via window.safeAreaInsets.bottom > 0
+  (not a hardcoded list of screen heights - works on any future device)
+- Mac Catalyst detection via TARGET_OS_MACCATALYST
 - OpenSSL and libcurl global initialization
 ```
 
@@ -206,6 +210,8 @@ graph LR
     A --> G[Timeouts]
     A --> H[DNS Resolution]
     A --> I[Authentication]
+    A --> J[Proxy Settings]
+    A --> K[Response Output]
     
     E --> E1[Insecure Mode]
     E --> E2[Cert Chain Details]
@@ -216,6 +222,12 @@ graph LR
     
     I --> I1[Username/Password]
     I --> I2[Auth Methods]
+    
+    J --> J1[Override System Proxy]
+    J --> J2[Custom Proxy host:port]
+    
+    K --> K1[Display Headers Only]
+    K --> K2[Fixed Width Font]
 ```
 
 **Settings Properties:**
@@ -233,6 +245,10 @@ graph LR
 | `userConnectTimeout` | NSNumber | Connection timeout (seconds) |
 | `userIPv4/userIPv6` | BOOL | IP version preferences |
 | `userResolve` | NSString | Manual DNS resolution |
+| `userProxyOverride` | BOOL | Manually override the iOS system proxy |
+| `userProxy` | NSString | Proxy override `[host]:[port]`, blank forces no proxy |
+| `userHeadersOnly` | BOOL | Discard response body (like `curl -o /dev/null`) |
+| `userFixedFont` | BOOL | Display result output in a monospace font |
 | `userName/userPass` | NSString | Authentication credentials |
 | `userAuth*` | BOOL | Authentication method flags |
 
@@ -404,11 +420,16 @@ The application uses different XIB files based on device:
 
 **Device Detection Logic:**
 ```objectivec
-Screen Height (native pixels):
-  2436, 1624, 1792, 2688, 2778, 2532, 2340 → Notched iPhone
-  < 2436 → Standard iPhone
-  iPad → Use iPad layout
+userInterfaceIdiom == Phone:
+  window.safeAreaInsets.bottom > 0 → Notched/Dynamic Island iPhone (X and newer)
+  otherwise → Standard iPhone (home button)
+userInterfaceIdiom == Pad → Use iPad layout
+TARGET_OS_MACCATALYST → Use Mac layout
 ```
+Using the safe area insets (rather than a hardcoded list of native screen
+heights) means new device sizes are handled automatically without a code
+update - the original height-list approach broke on iPhone 13 Pro+/14 Pro/15/16
+series since they weren't in the list.
 
 ### Dark Mode Support
 
@@ -452,6 +473,22 @@ waitForUser flag → Blocks download thread during user dialogs
 globalReset flag → Signals cancellation to libcurl callbacks
 Main run loop pumping → Ensures UI updates during long operations
 ```
+
+**Result View Performance (v1.19):** the result `UITextView` is updated via
+`appendResultText:`/`setResultText:` helpers that mutate its `NSTextStorage`
+incrementally instead of reassigning the whole `.text` (which forced a full
+relayout of everything received so far). `NSLayoutManager.allowsNonContiguousLayout`
+is enabled so scrolling large, heavily-wrapped responses doesn't require
+laying out everything before the visible range. The run-loop pump used to keep
+the UI responsive during a transfer now also services `UITrackingRunLoopMode`,
+not just the default mode, so scroll/drag gestures started mid-transfer are
+more likely to get serviced.
+
+**Known limitation:** `curl_easy_perform()` still runs synchronously on the
+main thread; responsiveness during a transfer depends on curl invoking the
+debug callback often enough to pump the run loop. See
+[issue #10](https://github.com/jasonacox/iCurlHTTP/issues/10) for the plan to
+move the transfer to a background thread and remove this pattern entirely.
 
 ---
 
@@ -501,7 +538,7 @@ graph LR
 
 ## External Dependencies
 
-### libcurl (v7.80.0)
+### libcurl (v8.17.0)
 
 **Purpose:** HTTP/HTTPS request handling
 
@@ -513,7 +550,7 @@ graph LR
 
 **Include Path:** `include/curl/`
 
-### OpenSSL (v1.1.1l)
+### OpenSSL (v3.0.18)
 
 **Purpose:** SSL/TLS encryption and certificate handling
 
@@ -525,11 +562,17 @@ graph LR
 
 **Include Path:** `include/openssl/`
 
-### nghttp2 (v1.46.0)
+### nghttp2 (v1.68.0)
 
 **Purpose:** HTTP/2 protocol support
 
 **Integration:** Compiled into libcurl
+
+The compiled `lib/*.xcframework` binaries are intentionally **not** committed
+(`.gitignore`'d) - only `Info.plist` structure stubs are tracked. Build them
+locally via [Build-OpenSSL-cURL](https://github.com/jasonacox/Build-OpenSSL-cURL)
+and drop the output into `lib/`. The `.github/workflows/ios-build.yml` CI
+workflow downloads a matching prebuilt release for automated builds.
 
 ### FXForms (v1.2 beta)
 
@@ -552,27 +595,39 @@ graph LR
 ```
 iCurlHTTP.xcodeproj/
 ├── project.pbxproj          # Xcode project configuration
-└── xcuserdata/              # User-specific settings
+└── xcuserdata/              # User-specific settings (gitignored)
 
 include/                      # C library headers
 ├── curl/                    # libcurl headers
 └── openssl/                 # OpenSSL headers
 
-libs/                        # iOS device libraries
-libs_catalyst/               # Mac Catalyst libraries
+lib/                          # xcframework structure stubs (Info.plist only)
+├── libcrypto.xcframework/    # Compiled binaries are gitignored - build
+├── libssl.xcframework/       # locally via Build-OpenSSL-cURL or let CI
+├── libcurl.xcframework/      # fetch them (.github/workflows/ios-build.yml)
+└── libnghttp2.xcframework/
 
 iCurlHTTP/                   # Application source
 ├── *.h, *.m                 # Implementation files
 ├── *.xib                    # Interface files
 ├── *.plist                  # Data files
 └── Images.xcassets/         # Image resources
+
+test/                        # Dev tooling (not part of the Xcode project)
+├── proxy_server.py          # IPv4/IPv6 HTTP(S) forward proxy for testing
+└── README.md                # the proxy override setting
+
+.github/workflows/           # CI
+└── ios-build.yml            # Builds for iOS Simulator on push/PR
+
+RELEASE.md                   # Per-version release notes
 ```
 
 ### Compiler Settings
 
 **Language:** Objective-C  
-**Deployment Target:** iOS 9.0+ (based on code patterns)  
-**Architectures:** arm64, arm64e (iOS), x86_64 (Catalyst)
+**Deployment Target:** iOS 13.0+ (required once `UIScene` lifecycle was adopted)  
+**Architectures:** arm64, arm64e (iOS), x86_64/arm64 (Simulator), x86_64 (Catalyst)
 
 ---
 
@@ -598,9 +653,10 @@ iCurlHTTP/                   # Application source
    ```
 
 3. **Threading Enhancement**
+   - Move `curl_easy_perform()` off the main thread and dispatch UI updates
+     back via GCD, removing the `waitForUser`/run-loop-pumping pattern
+     entirely - tracked in [issue #10](https://github.com/jasonacox/iCurlHTTP/issues/10)
    - Replace `globalReset` flag with modern cancellation tokens
-   - Use Grand Central Dispatch (GCD) or Operation Queues
-   - Implement proper async/await pattern
 
 4. **User Interface**
    - Consolidate XIB files using Auto Layout and size classes
@@ -618,6 +674,8 @@ iCurlHTTP/                   # Application source
    - **WebSocket Support:** Add WebSocket debugging capabilities
    
 6. **Testing**
+   - CI now builds the app for iOS Simulator on every push/PR
+     (`.github/workflows/ios-build.yml`) - still no unit/UI test target
    - Add unit tests for network logic
    - Implement UI tests for critical workflows
    - Mock libcurl for testing without network
@@ -637,7 +695,6 @@ iCurlHTTP/                   # Application source
 ### Low Priority
 
 9. **Code Quality**
-   - Remove deprecated API usage (UIAlertView references in comments)
    - Extract magic numbers to constants
    - Improve error handling and user feedback
    - Add code documentation (HeaderDoc/Jazzy)
@@ -661,12 +718,11 @@ iCurlHTTP/                   # Application source
 ### Technical Debt
 
 13. **Legacy Code**
-    - Remove commented-out code (UIAlertView, old iOS version checks)
+    - Remove commented-out code (old UIAlertView code paths, superseded
+      UIAlertController flows, stale iOS version checks)
     - Consolidate duplicate XIB files
-    - Update deprecated OpenSSL API usage (if any remain)
 
 14. **Build System**
-    - Update library versions (libcurl, OpenSSL, nghttp2)
     - Consider Swift Package Manager for dependencies
     - Add SwiftLint or similar linting tools
 
@@ -700,6 +756,8 @@ iCurlHTTP/                   # Application source
 | v1.15 | 12/29/2020 | iPhone 12 support |
 | v1.16 | 1/2/2021 | Mac Catalyst |
 | v1.17 | 11/21/2021 | iPhone 13, latest libraries |
+| v1.18 | 1/4/2026 | OpenSSL 3.0.18 upgrade, updated libcurl/nghttp2, iOS 12.0 minimum |
+| v1.19 | 1/5/2026 | iOS 13.0 minimum, `UIScene` lifecycle, Display Headers Only, Fixed Width Font, manual proxy override, large-file threshold raised to 2MB, notch detection fixed for newer iPhones, result-view performance overhaul, deprecation/warning cleanup |
 
 ---
 
@@ -708,9 +766,14 @@ iCurlHTTP/                   # Application source
 iCurlHTTP is a well-established iOS application with a long history of updates and improvements. The architecture follows classic iOS MVC patterns with direct integration to native C libraries (libcurl, OpenSSL). While the codebase is mature and functional, there are significant opportunities for modernization including Swift migration, architectural refactoring, and enhanced testing coverage.
 
 The application demonstrates good practices in:
-- Multi-device support
+- Multi-device support, with notch/Dynamic Island detection that adapts to
+  new hardware automatically
 - Persistent data management
 - Dark mode adaptation
 - Native library integration
+- CI that builds the app on every push/PR
 
-Areas requiring attention include threading model modernization, UI consolidation, and code modernization to leverage recent iOS platform capabilities.
+Areas requiring attention include moving network I/O off the main thread (see
+[issue #10](https://github.com/jasonacox/iCurlHTTP/issues/10)), UI
+consolidation, adding automated tests, and broader code modernization to
+leverage recent iOS platform capabilities.

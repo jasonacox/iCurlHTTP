@@ -62,3 +62,6 @@ build/
 /lib/*.xcframework/*
 !/lib/*.xcframework/Info.plist
 
+# Python (test/proxy_server.py)
+__pycache__/
+*.pyc

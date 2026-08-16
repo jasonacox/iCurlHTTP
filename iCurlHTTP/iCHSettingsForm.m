@@ -21,6 +21,7 @@
                  @{FXFormFieldKey: @"userPost", FXFormFieldTitle: @"", FXFormFieldFooter: @"(ex. field1=data&field2=data)", FXFormFieldType: FXFormFieldTypeLongText, FXFormFieldHeader: @"POST Data ⓟ"},
                  
                  @{FXFormFieldKey: @"userHeadersOnly", FXFormFieldTitle: @"Display Headers Only", FXFormFieldType: FXFormFieldTypeOption, FXFormFieldHeader: @"Response Output", FXFormFieldFooter: @"(Select to discard body content — like curl -o /dev/null)"},
+                 @{FXFormFieldKey: @"userFixedFont", FXFormFieldTitle: @"Fixed Width Font", FXFormFieldType: FXFormFieldTypeOption, FXFormFieldFooter: @"(Select to display output in a monospace font)"},
                  
                  @{FXFormFieldKey: @"userInsecure", FXFormFieldTitle: @"Insecure Mode",  FXFormFieldType: FXFormFieldTypeOption, FXFormFieldHeader: @"SSL/TLS Settings"},
                  @{FXFormFieldKey: @"userCertDetail", FXFormFieldTitle: @"Cert Chain Details", FXFormFieldType: FXFormFieldTypeOption},
@@ -34,6 +35,9 @@
                  @{FXFormFieldKey: @"userIPv4", FXFormFieldTitle: @"IPv4", FXFormFieldType: FXFormFieldTypeOption, FXFormFieldHeader: @"DNS Resolution Setting"},
                  @{FXFormFieldKey: @"userIPv6", FXFormFieldTitle: @"IPv6", FXFormFieldType: FXFormFieldTypeOption},
                  @{FXFormFieldKey: @"userResolve", FXFormFieldTitle: @"Resolve:", FXFormFieldFooter: @"Resolve format: [host]:[port]:[address]\n(ex: jasonacox.com:80:10.0.0.1)"},
+                 
+                 @{FXFormFieldKey: @"userProxyOverride", FXFormFieldTitle: @"Override System Proxy", FXFormFieldType: FXFormFieldTypeOption, FXFormFieldHeader: @"Proxy Settings", FXFormFieldFooter: @"(Select to manually set or force-disable the proxy, ignoring iOS system settings)"},
+                 @{FXFormFieldKey: @"userProxy", FXFormFieldTitle: @"Proxy:", FXFormFieldFooter: @"Format: [host]:[port] (ex: proxy.example.com:8080)\nLeave blank to force no proxy"},
                  
                  @{FXFormFieldKey: @"userName", FXFormFieldTitle: @"Username:", FXFormFieldHeader: @"HTTP Authentication"},
                  @{FXFormFieldKey: @"userPass", FXFormFieldTitle: @"Password:"},
